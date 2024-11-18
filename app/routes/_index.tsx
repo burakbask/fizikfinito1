@@ -24,7 +24,7 @@ export default function Index() {
         <Link to="/calendar" style={navButtonStyle}>
           Takvim
         </Link>
-        <Link to="/cards" style={navButtonStyle}>
+        <Link to="/card" style={navButtonStyle}>
           Ders Kartları
         </Link>
       </nav>
