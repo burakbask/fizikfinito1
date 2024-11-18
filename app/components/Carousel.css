@@ -1,0 +1,28 @@
+.carousel-container {
+    overflow: hidden;
+    white-space: nowrap;
+    width: 100%;
+    margin: 20px 0;
+  }
+  
+  .carousel-inner {
+    display: flex;
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .carousel-card {
+    flex: 0 0 auto;
+    width: 300px;
+    margin-right: 20px;
+    background-color: #f8f8f8;
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .carousel-image {
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+  }
+  
