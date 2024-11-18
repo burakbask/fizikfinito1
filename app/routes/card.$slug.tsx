@@ -89,6 +89,7 @@ export default function CardDetail() {
             <div>
               <h2 style={{ color: '#333' }}>İçerik Detayları</h2>
               <p>{card.content}</p>
+              <p>{card.content}</p>
             </div>
           )}
         </div>
