@@ -2,9 +2,16 @@ import axios from 'axios';
 
 export const getCollectionItems = async (collectionName) => {
   try {
-    const response = await axios.get(`${process.env.DIRECTUS_API_URL}/items/${collectionName}`, {
+    const directusUrl = process.env.PUBLIC_DIRECTUS_API_URL;
+    const directusToken = process.env.PUBLIC_DIRECTUS_API_TOKEN;
+
+    if (!directusUrl || !directusToken) {
+      throw new Error("PUBLIC_DIRECTUS_API_URL or PUBLIC_DIRECTUS_API_TOKEN is not defined.");
+    }
+
+    const response = await axios.get(`${directusUrl}/items/${collectionName}`, {
       headers: {
-        Authorization: `Bearer ${process.env.DIRECTUS_API_TOKEN}`,
+        Authorization: `Bearer ${directusToken}`,
       },
     });
     return response.data.data;
@@ -16,12 +23,19 @@ export const getCollectionItems = async (collectionName) => {
 
 export const getItem = async (collectionName, itemId) => {
   try {
-    const response = await axios.get(`${process.env.DIRECTUS_API_URL}/items/${collectionName}`, {
+    const directusUrl = process.env.PUBLIC_DIRECTUS_API_URL;
+    const directusToken = process.env.PUBLIC_DIRECTUS_API_TOKEN;
+
+    if (!directusUrl || !directusToken) {
+      throw new Error("PUBLIC_DIRECTUS_API_URL or PUBLIC_DIRECTUS_API_TOKEN is not defined.");
+    }
+
+    const response = await axios.get(`${directusUrl}/items/${collectionName}`, {
       params: {
         filter: { slug: { _eq: itemId } }
       },
       headers: {
-        Authorization: `Bearer ${process.env.DIRECTUS_API_TOKEN}`,
+        Authorization: `Bearer ${directusToken}`,
       },
     });
     return response.data.data.length > 0 ? response.data.data[0] : null;
@@ -33,12 +47,19 @@ export const getItem = async (collectionName, itemId) => {
 
 export const getItemBySlug = async (collectionName, slug) => {
   try {
-    const response = await axios.get(`${process.env.DIRECTUS_API_URL}/items/${collectionName}`, {
+    const directusUrl = process.env.PUBLIC_DIRECTUS_API_URL;
+    const directusToken = process.env.PUBLIC_DIRECTUS_API_TOKEN;
+
+    if (!directusUrl || !directusToken) {
+      throw new Error("PUBLIC_DIRECTUS_API_URL or PUBLIC_DIRECTUS_API_TOKEN is not defined.");
+    }
+
+    const response = await axios.get(`${directusUrl}/items/${collectionName}`, {
       params: {
         filter: { slug: { _eq: slug } }
       },
       headers: {
-        Authorization: `Bearer ${process.env.DIRECTUS_API_TOKEN}`,
+        Authorization: `Bearer ${directusToken}`,
       },
     });
     return response.data.data.length > 0 ? response.data.data[0] : null;
@@ -51,9 +72,16 @@ export const getItemBySlug = async (collectionName, slug) => {
 // Yeni bir item ekleme
 export const addItem = async (collectionName, itemData) => {
   try {
-    const response = await axios.post(`${process.env.DIRECTUS_API_URL}/items/${collectionName}`, itemData, {
+    const directusUrl = process.env.PUBLIC_DIRECTUS_API_URL;
+    const directusToken = process.env.PUBLIC_DIRECTUS_API_TOKEN;
+
+    if (!directusUrl || !directusToken) {
+      throw new Error("PUBLIC_DIRECTUS_API_URL or PUBLIC_DIRECTUS_API_TOKEN is not defined.");
+    }
+
+    const response = await axios.post(`${directusUrl}/items/${collectionName}`, itemData, {
       headers: {
-        Authorization: `Bearer ${process.env.DIRECTUS_API_TOKEN}`,
+        Authorization: `Bearer ${directusToken}`,
       },
     });
     return response.data.data;
@@ -66,9 +94,16 @@ export const addItem = async (collectionName, itemData) => {
 // Mevcut bir item'ı güncelleme
 export const updateItem = async (collectionName, itemId, itemData) => {
   try {
-    const response = await axios.patch(`${process.env.DIRECTUS_API_URL}/items/${collectionName}/${itemId}`, itemData, {
+    const directusUrl = process.env.PUBLIC_DIRECTUS_API_URL;
+    const directusToken = process.env.PUBLIC_DIRECTUS_API_TOKEN;
+
+    if (!directusUrl || !directusToken) {
+      throw new Error("PUBLIC_DIRECTUS_API_URL or PUBLIC_DIRECTUS_API_TOKEN is not defined.");
+    }
+
+    const response = await axios.patch(`${directusUrl}/items/${collectionName}/${itemId}`, itemData, {
       headers: {
-        Authorization: `Bearer ${process.env.DIRECTUS_API_TOKEN}`,
+        Authorization: `Bearer ${directusToken}`,
       },
     });
     return response.data.data;
@@ -81,9 +116,16 @@ export const updateItem = async (collectionName, itemId, itemData) => {
 // Bir item'ı silme
 export const deleteItem = async (collectionName, itemId) => {
   try {
-    await axios.delete(`${process.env.DIRECTUS_API_URL}/items/${collectionName}/${itemId}`, {
+    const directusUrl = process.env.PUBLIC_DIRECTUS_API_URL;
+    const directusToken = process.env.PUBLIC_DIRECTUS_API_TOKEN;
+
+    if (!directusUrl || !directusToken) {
+      throw new Error("PUBLIC_DIRECTUS_API_URL or PUBLIC_DIRECTUS_API_TOKEN is not defined.");
+    }
+
+    await axios.delete(`${directusUrl}/items/${collectionName}/${itemId}`, {
       headers: {
-        Authorization: `Bearer ${process.env.DIRECTUS_API_TOKEN}`,
+        Authorization: `Bearer ${directusToken}`,
       },
     });
   } catch (error) {
@@ -94,12 +136,19 @@ export const deleteItem = async (collectionName, itemId) => {
 // Tüm item'ları belirli bir filtre ile getirme
 export const getItemsByFilter = async (collectionName, filter) => {
   try {
-    const response = await axios.get(`${process.env.DIRECTUS_API_URL}/items/${collectionName}`, {
+    const directusUrl = process.env.PUBLIC_DIRECTUS_API_URL;
+    const directusToken = process.env.PUBLIC_DIRECTUS_API_TOKEN;
+
+    if (!directusUrl || !directusToken) {
+      throw new Error("PUBLIC_DIRECTUS_API_URL or PUBLIC_DIRECTUS_API_TOKEN is not defined.");
+    }
+
+    const response = await axios.get(`${directusUrl}/items/${collectionName}`, {
       params: {
         filter
       },
       headers: {
-        Authorization: `Bearer ${process.env.DIRECTUS_API_TOKEN}`,
+        Authorization: `Bearer ${directusToken}`,
       },
     });
     return response.data.data;
