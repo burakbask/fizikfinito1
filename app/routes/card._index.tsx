@@ -7,38 +7,38 @@ import Carousel from '~/components/Carousel';
 // Directus'tan tüm kart verilerini çekiyoruz
 export const loader = async () => {
   const cardsData = await getCollectionItems('cards');
-  return json({ cardsData, directusApiUrl: process.env.DIRECTUS_API_URL });
+  return json({ cardsData, directusApiUrl: process.env.PUBLIC_DIRECTUS_API_URL });
 };
 
 export default function Index() {
   const { cardsData, directusApiUrl } = useLoaderData();
-  const [filteredCategory, setFilteredCategory] = useState<string>('Tüm Sınıflar');
-  const [filteredSubcategory, setFilteredSubcategory] = useState<string>('');
-  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [filteredCategory, setFilteredCategory] = useState('Tüm Sınıflar');
+  const [filteredSubcategory, setFilteredSubcategory] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
 
   // Dinamik olarak kategorileri elde ediyoruz
-  const categories = Array.from(new Set(cardsData.map((card: any) => card.category)));
+  const categories = Array.from(new Set(cardsData.map((card) => card.category)));
 
   // Dinamik olarak alt kategorileri elde ediyoruz
   const subcategories = filteredCategory !== 'Tüm Sınıflar' 
-    ? Array.from(new Set(cardsData.filter((card: any) => card.category === filteredCategory).map((card: any) => card.subcategory)))
+    ? Array.from(new Set(cardsData.filter((card) => card.category === filteredCategory).map((card) => card.subcategory)))
     : [];
 
-  const handleSearch = (term: string) => {
+  const handleSearch = (term) => {
     setSearchTerm(term);
   };
 
-  const handleFilter = (category: string) => {
+  const handleFilter = (category) => {
     setFilteredCategory(category);
     setFilteredSubcategory(''); // Alt kategori seçimi sıfırlanır
   };
 
-  const handleSubcategoryFilter = (subcategory: string) => {
+  const handleSubcategoryFilter = (subcategory) => {
     setFilteredSubcategory(subcategory);
   };
 
   // Filtreleme işlemi
-  const filteredCards = cardsData.filter((card: any) => {
+  const filteredCards = cardsData.filter((card) => {
     return (
       (filteredCategory === 'Tüm Sınıflar' || card.category === filteredCategory) &&
       (filteredSubcategory === '' || card.subcategory === filteredSubcategory) &&
@@ -102,7 +102,7 @@ export default function Index() {
       <div style={{ marginTop: '20px' }}>
         {filteredCards.length > 0 ? (
           <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', justifyContent: 'center' }}>
-            {filteredCards.map((card: any) => (
+            {filteredCards.map((card) => (
               <Link key={card.id} to={`/card/${card.slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                 <div style={{ width: '250px', marginBottom: '20px', cursor: 'pointer', boxShadow: '0px 4px 15px rgba(0, 0, 0, 0.1)', borderRadius: '15px', overflow: 'hidden', transition: 'transform 0.3s ease' }}>
                   {card.image ? (
