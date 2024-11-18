@@ -11,7 +11,7 @@ export const loader = async ({ params }: LoaderArgs) => {
     throw new Response('Not Found', { status: 404 });
   }
 
-  // Directus'tan ilgili kart verisini alıyoruz
+  // Directus'tan ilgili kart verisini alıyoruza
   try {
     const card = await getItemBySlug('card_details', slug);
     if (!card) {
