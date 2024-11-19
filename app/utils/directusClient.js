@@ -157,3 +157,11 @@ export const getItemsByFilter = async (collectionName, filter) => {
     return [];
   }
 };
+
+// Fotoğraf URL'leri text olarak girildiği varsayılarak güncellenen render kısmı
+export const renderImage = (imageUrl, altText) => {
+  if (!imageUrl) {
+    return <div style={{ width: '100%', height: '150px', backgroundColor: '#ccc' }}>Görsel Yok</div>;
+  }
+  return <img src={imageUrl} alt={altText} style={{ width: '100%' }} />;
+};
