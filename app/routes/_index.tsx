@@ -9,7 +9,7 @@ export default function Index() {
       alignItems: 'center',
       justifyContent: 'center',
       minHeight: '100vh',
-      backgroundImage: 'url(https://yt3.googleusercontent.com/g3EIUoVlq6BcGY7I7uC6oO0bYV92EK2_eXg1r5UTXhPgzIc8hK0ERX1NjOxnfKXOANUOpXbu=s160-c-k-c0x00ffffff-no-rj)',
+      backgroundImage: 'url(https://www.technopat.net/sosyal/eklenti/1638563904626-png.1232474/)',
       backgroundSize: 'cover',
       backgroundPosition: 'center',
       padding: '20px',
