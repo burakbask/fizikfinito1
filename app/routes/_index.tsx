@@ -11,7 +11,7 @@ export default function Index() {
       minHeight: '100vh',
       height: '100vh',
       overflow: 'hidden',
-      backgroundImage: 'url(https://cdn.zeduva.com/2024/11/fizikfintoarkaplan.webp)',
+      backgroundImage: 'url(https://cdn.zeduva.com/2024/11/uzay-resmi.webp)',
       backgroundSize: 'cover',
       backgroundRepeat: 'no-repeat',
       backgroundPosition: 'center',
