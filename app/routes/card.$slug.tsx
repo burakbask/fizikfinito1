@@ -1,8 +1,8 @@
-// routes/cards_detail.$slug.tsx
 import React, { useState } from 'react';
 import { useLoaderData } from '@remix-run/react';
 import { LoaderArgs, json } from '@remix-run/node';
 import { getItemBySlug } from '~/utils/directusClient';
+import ShopifyScriptComponent from './book';
 
 // Directus API'den veri almak için loader fonksiyonu
 export const loader = async ({ params }: LoaderArgs) => {
@@ -11,7 +11,7 @@ export const loader = async ({ params }: LoaderArgs) => {
     throw new Response('Not Found', { status: 404 });
   }
 
-  // Directus'tan ilgili kart verisini alıyoruza
+  // Directus'tan ilgili kart verisini alıyoruz
   try {
     const card = await getItemBySlug('card_details', slug);
     if (!card) {
@@ -20,6 +20,7 @@ export const loader = async ({ params }: LoaderArgs) => {
 
     return json(card);
   } catch (error) {
+    console.error("Error fetching card data:", error);
     throw new Response('Server Error', { status: 500 });
   }
 };
@@ -30,7 +31,10 @@ export default function CardDetail() {
   const [tabIndex, setTabIndex] = useState(0);
 
   const videoId = card.videoUrl?.split('v=')[1]?.split('&')[0]; // Video ID'sini doğru şekilde almak için bölme işlemi
-  const embedUrl = videoId ? `https://www.youtube.com/embed/${videoId}?origin=${typeof window !== 'undefined' ? window.location.origin : ''}` : null;
+  const embedUrl =
+    videoId && typeof window !== 'undefined'
+      ? `https://www.youtube.com/embed/${videoId}?origin=${window.location.origin}`
+      : null;
 
   return (
     <div style={{ textAlign: 'center', padding: '40px', backgroundColor: '#f0f4f8', color: '#333', minHeight: '100vh' }}>
@@ -62,24 +66,30 @@ export default function CardDetail() {
           fontSize: '1.2rem',
           fontWeight: 'bold'
         }}
-        onMouseOver={(e) => {
-          e.currentTarget.style.backgroundColor = '#c0392b';
-          e.currentTarget.style.transform = 'scale(1.05)';
-        }}
-        onMouseOut={(e) => {
-          e.currentTarget.style.backgroundColor = '#e74c3c';
-          e.currentTarget.style.transform = 'scale(1)';
-        }}
         onClick={() => window.location.href = 'https://www.youtube.com/channel/UC...'}
       >
         YOUTUBE KAMPIMIZA KATIL!
       </button>
       <div style={{ width: '80%', margin: '40px auto', padding: '20px', backgroundColor: '#ffffff', borderRadius: '15px', boxShadow: '0px 8px 30px rgba(0, 0, 0, 0.1)' }}>
         <div style={{ display: 'flex', justifyContent: 'center', borderBottom: '2px solid #ccc' }}>
-          <button onClick={() => setTabIndex(0)} style={{ padding: '15px', border: 'none', background: tabIndex === 0 ? '#ecf0f1' : 'transparent', cursor: 'pointer', transition: 'background-color 0.3s ease', borderRadius: '10px 10px 0 0', fontWeight: tabIndex === 0 ? 'bold' : 'normal', fontSize: '1.1rem' }}>Açıklama</button>
-          <button onClick={() => setTabIndex(1)} style={{ padding: '15px', border: 'none', background: tabIndex === 1 ? '#ecf0f1' : 'transparent', cursor: 'pointer', transition: 'background-color 0.3s ease', borderRadius: '10px 10px 0 0', fontWeight: tabIndex === 1 ? 'bold' : 'normal', fontSize: '1.1rem' }}>Müfredat</button>
-          <button onClick={() => setTabIndex(2)} style={{ padding: '15px', border: 'none', background: tabIndex === 2 ? '#ecf0f1' : 'transparent', cursor: 'pointer', transition: 'background-color 0.3s ease', borderRadius: '10px 10px 0 0', fontWeight: tabIndex === 2 ? 'bold' : 'normal', fontSize: '1.1rem' }}>PDF'ler</button>
-          <button onClick={() => setTabIndex(3)} style={{ padding: '15px', border: 'none', background: tabIndex === 3 ? '#ecf0f1' : 'transparent', cursor: 'pointer', transition: 'background-color 0.3s ease', borderRadius: '10px 10px 0 0', fontWeight: tabIndex === 3 ? 'bold' : 'normal', fontSize: '1.1rem' }}>Diğer Videolarımız</button>
+          {['Açıklama', 'Müfredat', 'PDF\'ler', 'Diğer Videolarımız', 'Video\'ya Ait Kitabımız'].map((tab, index) => (
+            <button
+              key={index}
+              onClick={() => setTabIndex(index)}
+              style={{
+                padding: '15px',
+                border: 'none',
+                background: tabIndex === index ? '#ecf0f1' : 'transparent',
+                cursor: 'pointer',
+                transition: 'background-color 0.3s ease',
+                borderRadius: '10px 10px 0 0',
+                fontWeight: tabIndex === index ? 'bold' : 'normal',
+                fontSize: '1.1rem',
+              }}
+            >
+              {tab}
+            </button>
+          ))}
         </div>
         <div style={{ padding: '20px', textAlign: 'left' }}>
           {tabIndex === 0 && <p><strong>Açıklama:</strong> {card.description}</p>}
@@ -89,7 +99,12 @@ export default function CardDetail() {
             <div>
               <h2 style={{ color: '#333' }}>İçerik Detayları</h2>
               <p>{card.content}</p>
-              
+            </div>
+          )}
+          {tabIndex === 4 && card.shopifyProductId && (
+            <div>
+              {/* Shopify ürün bileşeni */}
+              <ShopifyScriptComponent productId={card.shopifyProductId} />
             </div>
           )}
         </div>

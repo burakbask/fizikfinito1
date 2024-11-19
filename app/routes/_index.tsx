@@ -11,7 +11,7 @@ export default function Index() {
       minHeight: '100vh',
       height: '100vh',
       overflow: 'hidden',
-      backgroundImage: 'url(https://www.technopat.net/sosyal/eklenti/1638563904626-png.1232474/)',
+      backgroundImage: 'url(https://cdn.zeduva.com/2024/11/fizikfintoarkaplan.webp)',
       backgroundSize: 'cover',
       backgroundRepeat: 'no-repeat',
       backgroundPosition: 'center',
@@ -22,7 +22,7 @@ export default function Index() {
       top: '0',
       left: '0',
       width: '100%',
-      height: '100%',
+
     }}>
       <header style={{ textAlign: 'center', paddingBottom: '20px', marginTop: '20px' }}>
         <h1 style={{ color: 'white', fontSize: '3rem', fontWeight: 'bold' }}>
