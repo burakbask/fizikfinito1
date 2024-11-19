@@ -13,6 +13,7 @@ export default function Index() {
       backgroundSize: 'cover',
       backgroundPosition: 'center',
       padding: '20px',
+      width: '100%',
     }}>
       <header style={{ textAlign: 'center', paddingBottom: '20px' }}>
         <h1 style={{ color: 'white', fontSize: '3rem', fontWeight: 'bold' }}>
