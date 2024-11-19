@@ -9,13 +9,22 @@ export default function Index() {
       alignItems: 'center',
       justifyContent: 'center',
       minHeight: '100vh',
+      height: '100vh',
+      overflow: 'hidden',
       backgroundImage: 'url(https://www.technopat.net/sosyal/eklenti/1638563904626-png.1232474/)',
       backgroundSize: 'cover',
+      backgroundRepeat: 'no-repeat',
       backgroundPosition: 'center',
-      padding: '20px',
+      padding: '0',
+      boxSizing: 'border-box',
+      margin: '0',
+      position: 'absolute',
+      top: '0',
+      left: '0',
       width: '100%',
+      height: '100%',
     }}>
-      <header style={{ textAlign: 'center', paddingBottom: '20px' }}>
+      <header style={{ textAlign: 'center', paddingBottom: '20px', marginTop: '20px' }}>
         <h1 style={{ color: 'white', fontSize: '3rem', fontWeight: 'bold' }}>
           Eğitim ve Bilgi Portalımıza Hoş Geldiniz
         </h1>
@@ -24,29 +33,55 @@ export default function Index() {
         </p>
       </header>
       <nav style={{ display: 'flex', gap: '20px', marginTop: '30px' }}>
-        <Link to="/calendar" style={navButtonStyle}>
+        <Link 
+          to="/calendar" 
+          style={{
+            padding: '15px 30px',
+            backgroundColor: '#007bff',
+            color: 'white',
+            textDecoration: 'none',
+            borderRadius: '25px',
+            fontWeight: 'bold',
+            transition: 'background-color 0.3s ease, transform 0.3s ease',
+            boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
+            cursor: 'pointer',
+          }}
+          onMouseEnter={(e) => {
+            e.target.style.backgroundColor = '#0056b3';
+            e.target.style.transform = 'scale(1.05)';
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.backgroundColor = '#007bff';
+            e.target.style.transform = 'scale(1)';
+          }}
+        >
           Takvim
         </Link>
-        <Link to="/card" style={navButtonStyle}>
+        <Link 
+          to="/card" 
+          style={{
+            padding: '15px 30px',
+            backgroundColor: '#007bff',
+            color: 'white',
+            textDecoration: 'none',
+            borderRadius: '25px',
+            fontWeight: 'bold',
+            transition: 'background-color 0.3s ease, transform 0.3s ease',
+            boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
+            cursor: 'pointer',
+          }}
+          onMouseEnter={(e) => {
+            e.target.style.backgroundColor = '#0056b3';
+            e.target.style.transform = 'scale(1.05)';
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.backgroundColor = '#007bff';
+            e.target.style.transform = 'scale(1)';
+          }}
+        >
           Ders Kartları
         </Link>
       </nav>
     </div>
   );
 }
-
-const navButtonStyle = {
-  padding: '15px 30px',
-  backgroundColor: '#007bff',
-  color: 'white',
-  textDecoration: 'none',
-  borderRadius: '25px',
-  fontWeight: 'bold',
-  transition: 'background-color 0.3s ease, transform 0.3s ease',
-  boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
-  cursor: 'pointer',
-  ':hover': {
-    backgroundColor: '#0056b3',
-    transform: 'scale(1.05)',
-  },
-};

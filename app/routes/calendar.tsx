@@ -28,17 +28,19 @@ export default function Calendar() {
 
   return (
     <div style={{
-      background: 'linear-gradient(to bottom, #1e3c72, #2a5298)',
-      padding: '20px',
+
+      padding: '0',
+      width: '100%',
+      height: '100%',
       minHeight: '100vh',
     }}>
       <div style={{
-        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+
         padding: '20px',
         borderRadius: '15px',
         boxShadow: '0 4px 15px rgba(0, 0, 0, 0.3)',
-        maxWidth: '900px',
-        margin: '0 auto'
+        width: '100%',
+        height: '100%',
       }}>
         <FullCalendar
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
