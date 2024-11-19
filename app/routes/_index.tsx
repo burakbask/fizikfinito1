@@ -22,7 +22,6 @@ export default function Index() {
       top: '0',
       left: '0',
       width: '100%',
-
     }}>
       <header style={{ textAlign: 'center', paddingBottom: '20px', marginTop: '20px' }}>
         <h1 style={{ color: 'white', fontSize: '3rem', fontWeight: 'bold' }}>
@@ -47,12 +46,12 @@ export default function Index() {
             cursor: 'pointer',
           }}
           onMouseEnter={(e) => {
-            e.target.style.backgroundColor = '#0056b3';
-            e.target.style.transform = 'scale(1.05)';
+            (e.currentTarget as HTMLAnchorElement).style.backgroundColor = '#0056b3';
+            (e.currentTarget as HTMLAnchorElement).style.transform = 'scale(1.05)';
           }}
           onMouseLeave={(e) => {
-            e.target.style.backgroundColor = '#007bff';
-            e.target.style.transform = 'scale(1)';
+            (e.currentTarget as HTMLAnchorElement).style.backgroundColor = '#007bff';
+            (e.currentTarget as HTMLAnchorElement).style.transform = 'scale(1)';
           }}
         >
           Takvim
@@ -71,12 +70,12 @@ export default function Index() {
             cursor: 'pointer',
           }}
           onMouseEnter={(e) => {
-            e.target.style.backgroundColor = '#0056b3';
-            e.target.style.transform = 'scale(1.05)';
+            (e.currentTarget as HTMLAnchorElement).style.backgroundColor = '#0056b3';
+            (e.currentTarget as HTMLAnchorElement).style.transform = 'scale(1.05)';
           }}
           onMouseLeave={(e) => {
-            e.target.style.backgroundColor = '#007bff';
-            e.target.style.transform = 'scale(1)';
+            (e.currentTarget as HTMLAnchorElement).style.backgroundColor = '#007bff';
+            (e.currentTarget as HTMLAnchorElement).style.transform = 'scale(1)';
           }}
         >
           Ders Kartları

@@ -2,38 +2,56 @@ import React, { useState } from 'react';
 import { Link, useLoaderData } from '@remix-run/react';
 import { json } from '@remix-run/node';
 import { getCollectionItems } from '~/utils/directusClient';
-import Carousel from '~/components/Carousel';
+
+// Kart veri tipini tanımlıyoruz
+type CardData = {
+  id: string;
+  slug: string;
+  category: string;
+  subcategory: string;
+  title: string;
+  description: string;
+  image?: string;
+};
 
 // Directus'tan tüm kart verilerini çekiyoruz
 export const loader = async () => {
-  const cardsData = await getCollectionItems('cards');
+  const cardsData: CardData[] = await getCollectionItems('cards');
   return json({ cardsData, directusApiUrl: process.env.PUBLIC_DIRECTUS_API_URL });
 };
 
 export default function Index() {
-  const { cardsData, directusApiUrl } = useLoaderData();
-  const [filteredCategory, setFilteredCategory] = useState('Tüm Sınıflar');
-  const [filteredSubcategory, setFilteredSubcategory] = useState('');
-  const [searchTerm, setSearchTerm] = useState('');
+  // `useLoaderData` fonksiyonunun türünü belirliyoruz
+  const { cardsData, directusApiUrl } = useLoaderData<typeof loader>();
+  const [filteredCategory, setFilteredCategory] = useState<string>('Tüm Sınıflar');
+  const [filteredSubcategory, setFilteredSubcategory] = useState<string>('');
+  const [searchTerm, setSearchTerm] = useState<string>('');
 
   // Dinamik olarak kategorileri elde ediyoruz
   const categories = Array.from(new Set(cardsData.map((card) => card.category)));
 
   // Dinamik olarak alt kategorileri elde ediyoruz
-  const subcategories = filteredCategory !== 'Tüm Sınıflar' 
-    ? Array.from(new Set(cardsData.filter((card) => card.category === filteredCategory).map((card) => card.subcategory)))
-    : [];
+  const subcategories =
+    filteredCategory !== 'Tüm Sınıflar'
+      ? Array.from(
+          new Set(
+            cardsData
+              .filter((card) => card.category === filteredCategory)
+              .map((card) => card.subcategory)
+          )
+        )
+      : [];
 
-  const handleSearch = (term) => {
+  const handleSearch = (term: string) => {
     setSearchTerm(term);
   };
 
-  const handleFilter = (category) => {
+  const handleFilter = (category: string) => {
     setFilteredCategory(category);
     setFilteredSubcategory(''); // Alt kategori seçimi sıfırlanır
   };
 
-  const handleSubcategoryFilter = (subcategory) => {
+  const handleSubcategoryFilter = (subcategory: string) => {
     setFilteredSubcategory(subcategory);
   };
 
@@ -47,17 +65,41 @@ export default function Index() {
   });
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', backgroundColor: '#f0f4f8', minHeight: '100vh', padding: '20px' }}>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        textAlign: 'center',
+        backgroundColor: '#f0f4f8',
+        minHeight: '100vh',
+        padding: '20px',
+      }}
+    >
       <div style={{ display: 'flex', justifyContent: 'center', width: '100%', padding: '10px' }}>
         <input
           type="text"
           placeholder="Ara..."
           value={searchTerm}
           onChange={(e) => handleSearch(e.target.value)}
-          style={{ padding: '10px', width: '300px', borderRadius: '25px', border: '1px solid #ccc', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)' }}
+          style={{
+            padding: '10px',
+            width: '300px',
+            borderRadius: '25px',
+            border: '1px solid #ccc',
+            boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
+          }}
         />
       </div>
-      <div style={{ marginTop: '20px', display: 'flex', gap: '15px', flexWrap: 'wrap', justifyContent: 'center' }}>
+      <div
+        style={{
+          marginTop: '20px',
+          display: 'flex',
+          gap: '15px',
+          flexWrap: 'wrap',
+          justifyContent: 'center',
+        }}
+      >
         {['Tüm Sınıflar', ...categories].map((category) => (
           <button
             key={category}
@@ -78,7 +120,15 @@ export default function Index() {
         ))}
       </div>
       {filteredCategory !== 'Tüm Sınıflar' && subcategories.length > 0 && (
-        <div style={{ marginTop: '20px', display: 'flex', gap: '15px', flexWrap: 'wrap', justifyContent: 'center' }}>
+        <div
+          style={{
+            marginTop: '20px',
+            display: 'flex',
+            gap: '15px',
+            flexWrap: 'wrap',
+            justifyContent: 'center',
+          }}
+        >
           {subcategories.map((subcategory) => (
             <button
               key={subcategory}
@@ -101,14 +151,43 @@ export default function Index() {
       )}
       <div style={{ marginTop: '20px' }}>
         {filteredCards.length > 0 ? (
-          <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', justifyContent: 'center' }}>
+          <div
+            style={{
+              display: 'flex',
+              gap: '20px',
+              flexWrap: 'wrap',
+              justifyContent: 'center',
+            }}
+          >
             {filteredCards.map((card) => (
-              <Link key={card.id} to={`/card/${card.slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                <div style={{ width: '250px', marginBottom: '20px', cursor: 'pointer', boxShadow: '0px 4px 15px rgba(0, 0, 0, 0.1)', borderRadius: '15px', overflow: 'hidden', transition: 'transform 0.3s ease' }}>
+              <Link
+                key={card.id}
+                to={`/card/${card.slug}`}
+                style={{ textDecoration: 'none', color: 'inherit' }}
+              >
+                <div
+                  style={{
+                    width: '250px',
+                    marginBottom: '20px',
+                    cursor: 'pointer',
+                    boxShadow: '0px 4px 15px rgba(0, 0, 0, 0.1)',
+                    borderRadius: '15px',
+                    overflow: 'hidden',
+                    transition: 'transform 0.3s ease',
+                  }}
+                >
                   {card.image ? (
                     <img src={`${card.image}`} alt={card.title} style={{ width: '100%' }} />
                   ) : (
-                    <div style={{ width: '100%', height: '150px', backgroundColor: '#ccc' }}>Görsel Yok</div>
+                    <div
+                      style={{
+                        width: '100%',
+                        height: '150px',
+                        backgroundColor: '#ccc',
+                      }}
+                    >
+                      Görsel Yok
+                    </div>
                   )}
                   <div style={{ padding: '15px', backgroundColor: '#fff' }}>
                     <h3 style={{ color: '#007bff' }}>{card.title}</h3>
