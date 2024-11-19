@@ -106,7 +106,7 @@ export default function Index() {
               <Link key={card.id} to={`/card/${card.slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                 <div style={{ width: '250px', marginBottom: '20px', cursor: 'pointer', boxShadow: '0px 4px 15px rgba(0, 0, 0, 0.1)', borderRadius: '15px', overflow: 'hidden', transition: 'transform 0.3s ease' }}>
                   {card.image ? (
-                    <img src={`http://localhost:8055/assets/${card.image}`} alt={card.title} style={{ width: '100%' }} />
+                    <img src={`${card.image}`} alt={card.title} style={{ width: '100%' }} />
                   ) : (
                     <div style={{ width: '100%', height: '150px', backgroundColor: '#ccc' }}>Görsel Yok</div>
                   )}
