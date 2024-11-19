@@ -9,7 +9,9 @@ export default function Index() {
       alignItems: 'center',
       justifyContent: 'center',
       minHeight: '100vh',
-      background: 'linear-gradient(to bottom, #1e3c72, #2a5298)',
+      backgroundImage: 'url(https://yt3.googleusercontent.com/g3EIUoVlq6BcGY7I7uC6oO0bYV92EK2_eXg1r5UTXhPgzIc8hK0ERX1NjOxnfKXOANUOpXbu=s160-c-k-c0x00ffffff-no-rj)',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
       padding: '20px',
     }}>
       <header style={{ textAlign: 'center', paddingBottom: '20px' }}>
