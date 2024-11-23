@@ -98,7 +98,7 @@ export default function Index() {
     }
 
     setFilteredCards(updatedFilteredCards);
-  }, [filteredCategory, filteredSubcategory, filteredSubsubcategory, cardsData]);
+  }, [filteredCategory, filteredSubcategory, filteredSubsubcategory]);
 
   // Her kategori için tek bir video ve kitap verisi seçme
   useEffect(() => {
@@ -113,7 +113,7 @@ export default function Index() {
 
     setSelectedVideoCard(videoCards);
     setSelectedBookCard(bookCards);
-  }, [categories, cardsData]);
+  }, [filteredCategory, cardsData]);
 
   return (
     <div
@@ -191,7 +191,7 @@ export default function Index() {
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
-                margin: '0 auto', // Ortalamak için eklenen kısım
+                margin: '0 auto',
               }}
             >
               <iframe
@@ -206,8 +206,8 @@ export default function Index() {
                   borderRadius: '15px',
                   boxShadow: '0px 8px 30px rgba(0, 0, 0, 0.2)',
                   objectFit: 'cover',
-                  marginBottom: '0', // Eklenen kısım
-                  paddingBottom: '0', // Eklenen kısım
+                  marginBottom: '0',
+                  paddingBottom: '0',
                 }}
               ></iframe>
             </div>
