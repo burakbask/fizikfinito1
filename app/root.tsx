@@ -72,9 +72,9 @@ export default function Root() {
               </ul>
               <div className="ml-auto">
                 {user ? (
-                  <span className="text-white text-xl font-semibold">
+                  <Link to="/profile" className="text-white text-xl font-semibold">
                     Hoşgeldiniz, {user.displayName}
-                  </span>
+                  </Link>
                 ) : (
                   <Link
                     to="/google"
