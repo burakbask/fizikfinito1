@@ -4,9 +4,11 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-  Link
+  Link,
+  useLoaderData
 } from "@remix-run/react";
-import type { LinksFunction } from "@remix-run/node";
+import type { LinksFunction, LoaderArgs } from "@remix-run/node";
+import { authenticator } from "~/utils/auth.server"; // Google OAuth için ekleme
 
 import "./tailwind.css";
 
@@ -23,7 +25,14 @@ export const links: LinksFunction = () => [
   },
 ];
 
+export const loader = async ({ request }: LoaderArgs) => {
+  let user = await authenticator.isAuthenticated(request);
+  return { user };
+};
+
 export default function Root() {
+  const { user } = useLoaderData<typeof loader>();
+
   return (
     <html lang="en">
       <head>
@@ -61,6 +70,20 @@ export default function Root() {
                   </Link>
                 </li>
               </ul>
+              <div className="ml-auto">
+                {user ? (
+                  <span className="text-white text-xl font-semibold">
+                    Hoşgeldiniz, {user.displayName}
+                  </span>
+                ) : (
+                  <Link
+                    to="/google"
+                    className="bg-yellow-300 text-purple-700 px-4 py-2 rounded-lg font-bold transition duration-300 ease-in-out hover:bg-yellow-400"
+                  >
+                    Google ile Giriş Yap
+                  </Link>
+                )}
+              </div>
             </div>
           </nav>
         </header>
