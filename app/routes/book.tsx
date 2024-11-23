@@ -11,18 +11,24 @@ const ShopifyScriptComponent = ({ productId }: { productId: string }) => {
   useEffect(() => {
     const scriptURL = 'https://sdks.shopifycdn.com/buy-button/latest/buy-button-storefront.min.js';
 
-    if (window.ShopifyBuy && window.ShopifyBuy.UI) {
-      ShopifyBuyInit();
+    if (!window.ShopifyBuy || !window.ShopifyBuy.UI) {
+      loadScript().then(() => ShopifyBuyInit());
     } else {
-      loadScript();
+      ShopifyBuyInit();
     }
 
     function loadScript() {
-      const script = document.createElement('script');
-      script.async = true;
-      script.src = scriptURL;
-      script.onload = ShopifyBuyInit;
-      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(script);
+      return new Promise<void>((resolve) => {
+        if (document.querySelector(`script[src="${scriptURL}"]`)) {
+          resolve(); // Script zaten yüklüyse devam et
+          return;
+        }
+        const script = document.createElement('script');
+        script.async = true;
+        script.src = scriptURL;
+        script.onload = () => resolve();
+        document.head.appendChild(script);
+      });
     }
 
     function ShopifyBuyInit() {
@@ -32,8 +38,12 @@ const ShopifyScriptComponent = ({ productId }: { productId: string }) => {
       });
 
       const productElement = document.querySelector(`.shopify-product[data-product-id="${productId}"]`);
-      if (productElement && !productElement.hasAttribute('data-shopify-rendered')) {
-        productElement.setAttribute('data-shopify-rendered', 'true');
+      if (productElement) {
+        // Eski bileşeni kaldır
+        while (productElement.firstChild) {
+          productElement.removeChild(productElement.firstChild);
+        }
+
         window.ShopifyBuy.UI.onReady(client).then((ui: any) => {
           ui.createComponent('product', {
             id: productId,
@@ -139,7 +149,9 @@ const ShopifyScriptComponent = ({ productId }: { productId: string }) => {
   }, [productId]);
 
   return (
-    <ProductComponentWrapper />
+    <div className={`shopify-product`} data-product-id={productId}>
+      <ProductComponentWrapper />
+    </div>
   );
 };
 

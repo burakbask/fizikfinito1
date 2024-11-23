@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useLoaderData } from '@remix-run/react';
 import { json } from '@remix-run/node';
 import { getCollectionItems } from '~/utils/directusClient';
@@ -28,6 +28,9 @@ export default function Index() {
   const [filteredCategory, setFilteredCategory] = useState<string>('Tüm Sınıflar');
   const [filteredSubcategory, setFilteredSubcategory] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const [filteredCards, setFilteredCards] = useState<CardData[]>(cardsData);
+  const [selectedVideoCard, setSelectedVideoCard] = useState<CardData | null>(null);
+  const [selectedBookCard, setSelectedBookCard] = useState<CardData | null>(null);
 
   // Dinamik olarak kategorileri elde ediyoruz
   const categories = Array.from(new Set(cardsData.map((card) => card.category)));
@@ -57,23 +60,46 @@ export default function Index() {
     setFilteredSubcategory(subcategory);
   };
 
-  // Filtreleme işlemi
-  const filteredCards = cardsData.filter((card) => {
-    return (
-      (filteredCategory === 'Tüm Sınıflar' || card.category === filteredCategory) &&
-      (filteredSubcategory === '' || card.subcategory === filteredSubcategory) &&
-      card.title.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  });
+  // Filtreleme işlemi - kategori, alt kategori ve arama terimi değiştiğinde güncellenir
+  useEffect(() => {
+    let updatedFilteredCards = cardsData;
+
+    if (filteredCategory !== 'Tüm Sınıflar') {
+      updatedFilteredCards = updatedFilteredCards.filter(
+        (card) => card.category === filteredCategory
+      );
+    }
+
+    if (filteredSubcategory !== '') {
+      updatedFilteredCards = updatedFilteredCards.filter(
+        (card) => card.subcategory === filteredSubcategory
+      );
+    }
+
+    if (searchTerm !== '') {
+      updatedFilteredCards = updatedFilteredCards.filter((card) =>
+        card.title.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    setFilteredCards(updatedFilteredCards);
+  }, [filteredCategory, filteredSubcategory, searchTerm, cardsData]);
 
   // Tek bir video ve kitap verisi seçme
-  const selectedVideoCard = filteredCategory !== 'Tüm Sınıflar'
-    ? cardsData.find((card) => card.category === filteredCategory && card.videoUrl)
-    : null;
+  useEffect(() => {
+    if (filteredCategory !== 'Tüm Sınıflar') {
+      const videoCard = filteredCards.find((card) => card.videoUrl);
+      const bookCard = filteredCards.find((card) => card.shopifyProductId);
+      setSelectedVideoCard(videoCard || null);
+      setSelectedBookCard(bookCard || null);
 
-  const selectedBookCard = filteredCategory !== 'Tüm Sınıflar'
-    ? cardsData.find((card) => card.category === filteredCategory && card.shopifyProductId)
-    : null;
+      console.log('Selected Video Card:', videoCard);
+      console.log('Selected Book Card:', bookCard);
+    } else {
+      setSelectedVideoCard(null);
+      setSelectedBookCard(null);
+    }
+  }, [filteredCategory, filteredCards]);
 
   return (
     <div
