@@ -8,7 +8,7 @@ import {
   useLoaderData
 } from "@remix-run/react";
 import type { LinksFunction, LoaderArgs } from "@remix-run/node";
-import { authenticator } from "~/utils/auth.server"; // aaGoogle OAuth için ekleme
+import { authenticator } from "~/utils/auth.server"; // aaaGoogle OAuth için ekleme
 
 import "./tailwind.css";
 
