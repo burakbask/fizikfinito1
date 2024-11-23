@@ -111,6 +111,9 @@ export default function Index() {
         backgroundColor: '#f0f4f8',
         minHeight: '100vh',
         padding: '20px',
+        width: '100%',
+        maxWidth: '1200px',
+        margin: '0 auto',
       }}
     >
       <div style={{ display: 'flex', justifyContent: 'center', width: '100%', padding: '10px' }}>
@@ -157,7 +160,19 @@ export default function Index() {
         ))}
       </div>
       {filteredCategory !== 'Tüm Sınıflar' && (
-        <div style={{ marginTop: '20px', display: 'flex', gap: '20px', justifyContent: 'center' }}>
+        <div
+          style={{
+            marginTop: '20px',
+            display: 'flex',
+            gap: '20px',
+            justifyContent: 'center',
+            alignItems: 'center',
+            width: '100%',
+            backgroundColor: '#ffffff',
+            padding: '20px',
+            borderRadius: '15px',
+          }}
+        >
           {/* Video Bileşeni */}
           {selectedVideoCard && selectedVideoCard.videoUrl && (
             <div
@@ -166,13 +181,20 @@ export default function Index() {
                 backgroundColor: '#ffffff',
                 borderRadius: '15px',
                 boxShadow: '0px 8px 15px rgba(0, 0, 0, 0.1)',
-                padding: '20px',
+                padding: '0',
                 textAlign: 'center',
+                width: '100%',
+                maxWidth: '800px',
+                aspectRatio: '16 / 9',
+                overflow: 'hidden',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
               }}
             >
               <iframe
                 width="100%"
-                height="100%"
+                height="450px"
                 src={`https://www.youtube.com/embed/${selectedVideoCard.videoUrl.split('v=')[1]?.split('&')[0]}`}
                 title="YouTube video player"
                 frameBorder="0"
@@ -181,6 +203,7 @@ export default function Index() {
                 style={{
                   borderRadius: '15px',
                   boxShadow: '0px 8px 30px rgba(0, 0, 0, 0.2)',
+                  objectFit: 'cover',
                 }}
               ></iframe>
             </div>
@@ -242,7 +265,7 @@ export default function Index() {
           ))}
         </div>
       )}
-      <div style={{ marginTop: '20px' }}>
+      <div style={{ marginTop: '20px', width: '100%' }}>
         {filteredCards.length > 0 ? (
           <div
             style={{
@@ -269,12 +292,13 @@ export default function Index() {
                     overflow: 'hidden',
                     transition: 'transform 0.3s ease',
                     backgroundColor: '#fff',
+                    maxWidth: '100%',
                   }}
                 >
                   {card.videoUrl ? (
                     <iframe
-                      width="250"
-                      height="150"
+                      width="100%"
+                      height="100%"
                       src={`https://www.youtube.com/embed/${card.videoUrl.split('v=')[1]?.split('&')[0]}`}
                       title="YouTube video player"
                       frameBorder="0"
@@ -283,6 +307,7 @@ export default function Index() {
                       style={{
                         borderRadius: '15px 0 0 15px',
                         boxShadow: '0px 8px 30px rgba(0, 0, 0, 0.2)',
+                        objectFit: 'cover',
                       }}
                     ></iframe>
                   ) : (
