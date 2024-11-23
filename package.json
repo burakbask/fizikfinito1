@@ -25,7 +25,8 @@
     "react": "^18.2.0",
     "react-calendar": "^5.1.0",
     "react-datepicker": "^7.5.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "remix-auth-google": "^2.0.0"
   },
   "devDependencies": {
     "@remix-run/dev": "^2.14.0",
