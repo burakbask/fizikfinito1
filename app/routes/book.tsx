@@ -58,18 +58,19 @@ const ShopifyScriptComponent = ({ productId }: { productId: string }) => {
                       'margin-left': '10px',
                       'margin-right': '10px',
                       'margin-bottom': '50px',
+                      'font-size': '75%', // Yazı boyutunu %25 küçülttük
                     },
                   },
                   button: {
-                    'font-size': '16px',
-                    'padding-top': '16px',
-                    'padding-bottom': '16px',
+                    'font-size': '12px', // Yazı boyutunu %25 küçülttük
+                    'padding-top': '12px', // Boyutu %25 küçülttük
+                    'padding-bottom': '12px', // Boyutu %25 küçülttük
                     'border-radius': '13px',
                   },
                   quantityInput: {
-                    'font-size': '16px',
-                    'padding-top': '16px',
-                    'padding-bottom': '16px',
+                    'font-size': '12px', // Yazı boyutunu %25 küçülttük
+                    'padding-top': '12px', // Boyutu %25 küçülttük
+                    'padding-bottom': '12px', // Boyutu %25 küçülttük
                   },
                 },
                 text: {
@@ -98,18 +99,19 @@ const ShopifyScriptComponent = ({ productId }: { productId: string }) => {
                       'max-width': '100%',
                       'margin-left': '0px',
                       'margin-bottom': '0px',
+                      'font-size': '75%', // Yazı boyutunu %25 küçülttük
                     },
                   },
                   button: {
-                    'font-size': '16px',
-                    'padding-top': '16px',
-                    'padding-bottom': '16px',
+                    'font-size': '12px', // Yazı boyutunu %25 küçülttük
+                    'padding-top': '12px', // Boyutu %25 küçülttük
+                    'padding-bottom': '12px', // Boyutu %25 küçülttük
                     'border-radius': '13px',
                   },
                   quantityInput: {
-                    'font-size': '16px',
-                    'padding-top': '16px',
-                    'padding-bottom': '16px',
+                    'font-size': '12px', // Yazı boyutunu %25 küçülttük
+                    'padding-top': '12px', // Boyutu %25 küçülttük
+                    'padding-bottom': '12px', // Boyutu %25 küçülttük
                   },
                 },
                 text: {
@@ -119,9 +121,9 @@ const ShopifyScriptComponent = ({ productId }: { productId: string }) => {
               cart: {
                 styles: {
                   button: {
-                    'font-size': '16px',
-                    'padding-top': '16px',
-                    'padding-bottom': '16px',
+                    'font-size': '12px', // Yazı boyutunu %25 küçülttük
+                    'padding-top': '12px', // Boyutu %25 küçülttük
+                    'padding-bottom': '12px', // Boyutu %25 küçülttük
                     'border-radius': '13px',
                   },
                 },
@@ -137,7 +139,7 @@ const ShopifyScriptComponent = ({ productId }: { productId: string }) => {
               toggle: {
                 styles: {
                   count: {
-                    'font-size': '16px',
+                    'font-size': '12px', // Yazı boyutunu %25 küçülttük
                   },
                 },
               },

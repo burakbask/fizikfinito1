@@ -27,7 +27,6 @@ export default function Index() {
   const { cardsData } = useLoaderData<typeof loader>();
   const [filteredCategory, setFilteredCategory] = useState<string>('Tüm Sınıflar');
   const [filteredSubcategory, setFilteredSubcategory] = useState<string>('');
-  const [searchTerm, setSearchTerm] = useState<string>('');
   const [filteredCards, setFilteredCards] = useState<CardData[]>(cardsData);
   const [selectedVideoCard, setSelectedVideoCard] = useState<CardData | null>(null);
   const [selectedBookCard, setSelectedBookCard] = useState<CardData | null>(null);
@@ -46,10 +45,6 @@ export default function Index() {
           )
         )
       : [];
-
-  const handleSearch = (term: string) => {
-    setSearchTerm(term);
-  };
 
   const handleFilter = (category: string) => {
     setFilteredCategory(category);
@@ -76,14 +71,8 @@ export default function Index() {
       );
     }
 
-    if (searchTerm !== '') {
-      updatedFilteredCards = updatedFilteredCards.filter((card) =>
-        card.title.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
     setFilteredCards(updatedFilteredCards);
-  }, [filteredCategory, filteredSubcategory, searchTerm, cardsData]);
+  }, [filteredCategory, filteredSubcategory, cardsData]);
 
   // Tek bir video ve kitap verisi seçme
   useEffect(() => {
@@ -112,25 +101,10 @@ export default function Index() {
         minHeight: '100vh',
         padding: '20px',
         width: '100%',
-        maxWidth: '1200px',
+        maxWidth: '1000px',
         margin: '0 auto',
       }}
     >
-      <div style={{ display: 'flex', justifyContent: 'center', width: '100%', padding: '10px' }}>
-        <input
-          type="text"
-          placeholder="Ara..."
-          value={searchTerm}
-          onChange={(e) => handleSearch(e.target.value)}
-          style={{
-            padding: '10px',
-            width: '300px',
-            borderRadius: '25px',
-            border: '1px solid #ccc',
-            boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
-          }}
-        />
-      </div>
       <div
         style={{
           marginTop: '20px',
@@ -164,12 +138,12 @@ export default function Index() {
           style={{
             marginTop: '20px',
             display: 'flex',
-            gap: '20px',
+            gap: '15px',
             justifyContent: 'center',
             alignItems: 'center',
             width: '100%',
             backgroundColor: '#ffffff',
-            padding: '20px',
+            padding: '10px',
             borderRadius: '15px',
           }}
         >
@@ -177,14 +151,14 @@ export default function Index() {
           {selectedVideoCard && selectedVideoCard.videoUrl && (
             <div
               style={{
-                flex: 2,
+                flex: 3, // Boyutu artırmak için flex değerini büyütüyoruz
                 backgroundColor: '#ffffff',
                 borderRadius: '15px',
-                boxShadow: '0px 8px 15px rgba(0, 0, 0, 0.1)',
+                boxShadow: '15px 15px 15px rgba(0, 0, 0, 0.1)',
                 padding: '0',
                 textAlign: 'center',
                 width: '100%',
-                maxWidth: '800px',
+                maxWidth: '700px', // Daha büyük bir maksimum genişlik
                 aspectRatio: '16 / 9',
                 overflow: 'hidden',
                 display: 'flex',
@@ -194,7 +168,7 @@ export default function Index() {
             >
               <iframe
                 width="100%"
-                height="450px"
+                height="350px" // Boyutu artırmak için yükseklik değeri değiştirildi
                 src={`https://www.youtube.com/embed/${selectedVideoCard.videoUrl.split('v=')[1]?.split('&')[0]}`}
                 title="YouTube video player"
                 frameBorder="0"
@@ -216,12 +190,11 @@ export default function Index() {
                 backgroundColor: '#ffffff',
                 borderRadius: '15px',
                 boxShadow: '0px 8px 15px rgba(0, 0, 0, 0.1)',
-                padding: '20px',
+                padding: '10px',
                 textAlign: 'center',
-                maxWidth: '300px',
+                maxWidth: 'auto',
               }}
             >
-              <h2 style={{ color: '#007bff', marginBottom: '10px', fontSize: '1.1rem' }}>Kitaplar</h2>
               <div
                 style={{
                   textAlign: 'center',
@@ -284,7 +257,7 @@ export default function Index() {
                 <div
                   style={{
                     display: 'flex',
-                    width: '600px',
+                    width: '450px',
                     marginBottom: '20px',
                     cursor: 'pointer',
                     boxShadow: '0px 4px 15px rgba(0, 0, 0, 0.1)',
@@ -313,8 +286,8 @@ export default function Index() {
                   ) : (
                     <div
                       style={{
-                        width: '250px',
-                        height: '150px',
+                        width: '200px',
+                        height: '120px',
                         backgroundColor: '#ccc',
                         borderRadius: '15px 0 0 15px',
                       }}
