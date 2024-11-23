@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLoaderData } from '@remix-run/react';
 import { LoaderArgs, json } from '@remix-run/node';
 import { getItemBySlug } from '~/utils/directusClient';
@@ -29,12 +29,20 @@ export const loader = async ({ params }: LoaderArgs) => {
 export default function CardDetail() {
   const card = useLoaderData<typeof loader>();
   const [tabIndex, setTabIndex] = useState(0);
+  const [isProductRendered, setIsProductRendered] = useState(false);
 
   const videoId = card.videoUrl?.split('v=')[1]?.split('&')[0]; // Video ID'sini doğru şekilde almak için bölme işlemi
   const embedUrl =
     videoId && typeof window !== 'undefined'
       ? `https://www.youtube.com/embed/${videoId}?origin=${window.location.origin}`
       : null;
+
+  // Shopify bileşeninin yalnızca bir kez render edilmesini sağlamak için state kullanımı
+  useEffect(() => {
+    if (tabIndex === 4 && card.shopifyProductId && !isProductRendered) {
+      setIsProductRendered(true);
+    }
+  }, [tabIndex, card.shopifyProductId, isProductRendered]);
 
   return (
     <div style={{ textAlign: 'center', padding: '40px', backgroundColor: '#f0f4f8', color: '#333', minHeight: '100vh' }}>
@@ -101,7 +109,7 @@ export default function CardDetail() {
               <p>{card.content}</p>
             </div>
           )}
-          {tabIndex === 4 && card.shopifyProductId && (
+          {tabIndex === 4 && card.shopifyProductId && isProductRendered && (
             <div>
               {/* Shopify ürün bileşeni */}
               <ShopifyScriptComponent productId={card.shopifyProductId} />

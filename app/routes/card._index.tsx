@@ -11,6 +11,7 @@ type CardData = {
   title: string;
   category: string;
   subcategory: string;
+  subsubcategory?: string;
   description: string;
   image?: string; // URL olarak çekilecek
   videoUrl?: string;
@@ -27,9 +28,10 @@ export default function Index() {
   const { cardsData } = useLoaderData<typeof loader>();
   const [filteredCategory, setFilteredCategory] = useState<string>('Tüm Sınıflar');
   const [filteredSubcategory, setFilteredSubcategory] = useState<string>('');
+  const [filteredSubsubcategory, setFilteredSubsubcategory] = useState<string>('');
   const [filteredCards, setFilteredCards] = useState<CardData[]>(cardsData);
-  const [selectedVideoCard, setSelectedVideoCard] = useState<CardData | null>(null);
-  const [selectedBookCard, setSelectedBookCard] = useState<CardData | null>(null);
+  const [selectedVideoCard, setSelectedVideoCard] = useState<{ [key: string]: CardData | null }>({});
+  const [selectedBookCard, setSelectedBookCard] = useState<{ [key: string]: CardData | null }>({});
 
   // Dinamik olarak kategorileri elde ediyoruz
   const categories = Array.from(new Set(cardsData.map((card) => card.category)));
@@ -46,16 +48,34 @@ export default function Index() {
         )
       : [];
 
+  // Dinamik olarak alt alt kategorileri elde ediyoruz
+  const subsubcategories =
+    filteredSubcategory !== ''
+      ? Array.from(
+          new Set(
+            cardsData
+              .filter((card) => card.subcategory === filteredSubcategory)
+              .map((card) => card.subsubcategory)
+          )
+        )
+      : [];
+
   const handleFilter = (category: string) => {
     setFilteredCategory(category);
     setFilteredSubcategory(''); // Alt kategori seçimi sıfırlanır
+    setFilteredSubsubcategory(''); // Alt alt kategori seçimi sıfırlanır
   };
 
   const handleSubcategoryFilter = (subcategory: string) => {
     setFilteredSubcategory(subcategory);
+    setFilteredSubsubcategory(''); // Alt alt kategori seçimi sıfırlanır
   };
 
-  // Filtreleme işlemi - kategori, alt kategori ve arama terimi değiştiğinde güncellenir
+  const handleSubsubcategoryFilter = (subsubcategory: string) => {
+    setFilteredSubsubcategory(subsubcategory);
+  };
+
+  // Filtreleme işlemi - kategori, alt kategori ve alt alt kategori değiştiğinde güncellenir
   useEffect(() => {
     let updatedFilteredCards = cardsData;
 
@@ -71,24 +91,29 @@ export default function Index() {
       );
     }
 
-    setFilteredCards(updatedFilteredCards);
-  }, [filteredCategory, filteredSubcategory, cardsData]);
-
-  // Tek bir video ve kitap verisi seçme
-  useEffect(() => {
-    if (filteredCategory !== 'Tüm Sınıflar') {
-      const videoCard = filteredCards.find((card) => card.videoUrl);
-      const bookCard = filteredCards.find((card) => card.shopifyProductId);
-      setSelectedVideoCard(videoCard || null);
-      setSelectedBookCard(bookCard || null);
-
-      console.log('Selected Video Card:', videoCard);
-      console.log('Selected Book Card:', bookCard);
-    } else {
-      setSelectedVideoCard(null);
-      setSelectedBookCard(null);
+    if (filteredSubsubcategory !== '') {
+      updatedFilteredCards = updatedFilteredCards.filter(
+        (card) => card.subsubcategory === filteredSubsubcategory
+      );
     }
-  }, [filteredCategory, filteredCards]);
+
+    setFilteredCards(updatedFilteredCards);
+  }, [filteredCategory, filteredSubcategory, filteredSubsubcategory, cardsData]);
+
+  // Her kategori için tek bir video ve kitap verisi seçme
+  useEffect(() => {
+    const videoCards: { [key: string]: CardData | null } = {};
+    const bookCards: { [key: string]: CardData | null } = {};
+
+    categories.forEach((category) => {
+      const filteredCategoryCards = cardsData.filter((card) => card.category === category);
+      videoCards[category] = filteredCategoryCards.find((card) => card.videoUrl) || null;
+      bookCards[category] = filteredCategoryCards.find((card) => card.shopifyProductId) || null;
+    });
+
+    setSelectedVideoCard(videoCards);
+    setSelectedBookCard(bookCards);
+  }, [categories, cardsData]);
 
   return (
     <div
@@ -140,36 +165,39 @@ export default function Index() {
             display: 'flex',
             gap: '15px',
             justifyContent: 'center',
-            alignItems: 'center',
+            alignItems: 'flex-start',
             width: '100%',
             backgroundColor: '#ffffff',
             padding: '10px',
             borderRadius: '15px',
+            flexWrap: 'wrap',
           }}
         >
           {/* Video Bileşeni */}
-          {selectedVideoCard && selectedVideoCard.videoUrl && (
+          {selectedVideoCard[filteredCategory] && selectedVideoCard[filteredCategory]?.videoUrl && (
             <div
               style={{
-                flex: 3, // Boyutu artırmak için flex değerini büyütüyoruz
+                flex: 3,
                 backgroundColor: '#ffffff',
                 borderRadius: '15px',
                 boxShadow: '15px 15px 15px rgba(0, 0, 0, 0.1)',
                 padding: '0',
                 textAlign: 'center',
                 width: '100%',
-                maxWidth: '700px', // Daha büyük bir maksimum genişlik
+                maxWidth: '700px',
+                height: 'auto',
                 aspectRatio: '16 / 9',
                 overflow: 'hidden',
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
+                margin: '0 auto', // Ortalamak için eklenen kısım
               }}
             >
               <iframe
                 width="100%"
-                height="350px" // Boyutu artırmak için yükseklik değeri değiştirildi
-                src={`https://www.youtube.com/embed/${selectedVideoCard.videoUrl.split('v=')[1]?.split('&')[0]}`}
+                height="400px"
+                src={`https://www.youtube.com/embed/${selectedVideoCard[filteredCategory]?.videoUrl.split('v=')[1]?.split('&')[0]}`}
                 title="YouTube video player"
                 frameBorder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -178,12 +206,15 @@ export default function Index() {
                   borderRadius: '15px',
                   boxShadow: '0px 8px 30px rgba(0, 0, 0, 0.2)',
                   objectFit: 'cover',
+                  marginBottom: '0', // Eklenen kısım
+                  paddingBottom: '0', // Eklenen kısım
                 }}
               ></iframe>
             </div>
           )}
+
           {/* Kitap Bileşeni */}
-          {selectedBookCard && selectedBookCard.shopifyProductId && (
+          {selectedBookCard[filteredCategory] && selectedBookCard[filteredCategory]?.shopifyProductId && (
             <div
               style={{
                 flex: 1,
@@ -202,7 +233,7 @@ export default function Index() {
                 }}
               >
                 {/* Shopify ürün bileşeni */}
-                <ShopifyScriptComponent productId={selectedBookCard.shopifyProductId} />
+                <ShopifyScriptComponent productId={selectedBookCard[filteredCategory]?.shopifyProductId} />
               </div>
             </div>
           )}
@@ -238,13 +269,46 @@ export default function Index() {
           ))}
         </div>
       )}
+      {subsubcategories.length > 0 && (
+        <div
+          style={{
+            marginTop: '20px',
+            display: 'flex',
+            gap: '15px',
+            flexWrap: 'wrap',
+            justifyContent: 'center',
+          }}
+        >
+          {subsubcategories.map((subsubcategory) => (
+            <button
+              key={subsubcategory}
+              onClick={() => handleSubsubcategoryFilter(subsubcategory)}
+              style={{
+                padding: '10px 20px',
+                cursor: 'pointer',
+                borderRadius: '25px',
+                border: 'none',
+                backgroundColor: filteredSubsubcategory === subsubcategory ? '#ff6347' : '#fff',
+                color: filteredSubsubcategory === subsubcategory ? '#fff' : '#ff6347',
+                boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
+                transition: 'background-color 0.3s ease, color 0.3s ease',
+              }}
+            >
+              {subsubcategory}
+            </button>
+          ))}
+        </div>
+      )}
       <div style={{ marginTop: '20px', width: '100%' }}>
         {filteredCards.length > 0 ? (
           <div
             style={{
               display: 'flex',
-              gap: '20px',
+              flexDirection: 'row',
               flexWrap: 'wrap',
+              gap: '20px',
+              alignItems: 'center',
+              width: '100%',
               justifyContent: 'center',
             }}
           >
@@ -252,12 +316,12 @@ export default function Index() {
               <Link
                 key={card.id}
                 to={`/card/${card.slug}`}
-                style={{ textDecoration: 'none', color: 'inherit' }}
+                style={{ textDecoration: 'none', color: 'inherit', width: 'calc(50% - 20px)', display: 'flex', justifyContent: 'center' }}
               >
                 <div
                   style={{
                     display: 'flex',
-                    width: '450px',
+                    flexDirection: 'row',
                     marginBottom: '20px',
                     cursor: 'pointer',
                     boxShadow: '0px 4px 15px rgba(0, 0, 0, 0.1)',
@@ -265,13 +329,15 @@ export default function Index() {
                     overflow: 'hidden',
                     transition: 'transform 0.3s ease',
                     backgroundColor: '#fff',
-                    maxWidth: '100%',
+                    maxWidth: '450px',
+                    width: '100%',
+                    textAlign: 'left',
                   }}
                 >
                   {card.videoUrl ? (
                     <iframe
-                      width="100%"
-                      height="100%"
+                      width="150px"
+                      height="150px"
                       src={`https://www.youtube.com/embed/${card.videoUrl.split('v=')[1]?.split('&')[0]}`}
                       title="YouTube video player"
                       frameBorder="0"
@@ -286,8 +352,8 @@ export default function Index() {
                   ) : (
                     <div
                       style={{
-                        width: '200px',
-                        height: '120px',
+                        width: '150px',
+                        height: '150px',
                         backgroundColor: '#ccc',
                         borderRadius: '15px 0 0 15px',
                       }}
@@ -301,13 +367,12 @@ export default function Index() {
                       display: 'flex',
                       flexDirection: 'column',
                       justifyContent: 'center',
-                      alignItems: 'center',
-                      flex: 1,
-                      textAlign: 'center',
+                      alignItems: 'flex-start',
+                      textAlign: 'left',
                     }}
                   >
-                    <h3 style={{ color: '#007bff', marginBottom: '10px' }}>{card.title}</h3>
-                    <p style={{ color: '#555' }}>{card.description}</p>
+                    <h3 style={{ color: '#007bff', marginBottom: '10px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{card.title}</h3>
+                    <p style={{ color: '#555', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{card.description}</p>
                   </div>
                 </div>
               </Link>

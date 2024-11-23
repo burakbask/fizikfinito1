@@ -55,7 +55,7 @@ export default function Root() {
               </Link>
               <ul className="hidden md:flex space-x-8 text-lg font-medium">
                 <li>
-                  <Link to="/" className="text-gray-700 hover:text-blue-600 transition duration-300 ease-in-out">
+                  <Link to="/card" className="text-gray-700 hover:text-blue-600 transition duration-300 ease-in-out">
                     Ana Sayfa
                   </Link>
                 </li>
@@ -65,8 +65,8 @@ export default function Root() {
                   </Link>
                 </li>
                 <li>
-                  <Link to="/card" className="text-gray-700 hover:text-blue-600 transition duration-300 ease-in-out">
-                    Kartlar
+                  <Link to="/dersplanlamam" className="text-gray-700 hover:text-blue-600 transition duration-300 ease-in-out">
+                    Ders Planlamam
                   </Link>
                 </li>
               </ul>

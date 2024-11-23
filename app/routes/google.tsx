@@ -1,7 +1,8 @@
-import { LoaderFunction } from "@remix-run/node";
 import { authenticator } from "~/utils/auth.server";
 
-export let loader: LoaderFunction = async ({ request }) => {
-  // Kullanıcıyı Google kimlik doğrulama sayfasına yönlendirin
-  return authenticator.authenticate("google", request);
+export const loader = async ({ request }: { request: Request }) => {
+  return authenticator.authenticate("google", request, {
+    successRedirect: "/profile", // Redirect here after successful login
+    failureRedirect: "/login",  // Redirect here if authentication fails
+  });
 };
