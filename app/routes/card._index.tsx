@@ -5,6 +5,11 @@ import { getCollectionItems } from '~/utils/directusClient';
 import ShopifyScriptComponent from './book';
 
 type CardData = {
+  id: string;
+  slug: string;
+  kategori: string;
+  altkategori?: string;
+  altaltkategori?: string;
   kursBasligi: string;
   kimlerIcin: string;
   suresi: string;
@@ -18,17 +23,12 @@ type CardData = {
 
 export const loader = async () => {
   const cardsData: CardData[] = await getCollectionItems('cards');
-  return json({ cardsData });
+  const categoriesData = await getCollectionItems('Kategoriler');
+  return json({ cardsData, categoriesData });
 };
 
 export default function Index() {
-  const { cardsData } = useLoaderData<typeof loader>();
-  const [kursBasligi, setKursBasligi] = useState<string>('');
-  const [kimlerIcin, setKimlerIcin] = useState<string>('');
-  const [suresi, setSuresi] = useState<string>('');
-  const [seviye, setSeviye] = useState<number>(0);
-  const [kampKitabi, setKampKitabi] = useState<string>('');
-  const [kursAciklamasi, setKursAciklamasi] = useState<string>('');
+  const { cardsData, categoriesData } = useLoaderData<typeof loader>();
   const [filteredCategory, setFilteredCategory] = useState<string>('YKS Hazırlık');
   const [filteredSubcategory, setFilteredSubcategory] = useState<string>('');
   const [filteredSubsubcategory, setFilteredSubsubcategory] = useState<string>('');
@@ -56,15 +56,15 @@ export default function Index() {
     }
   }, [filteredSubcategory]);
 
-  const categories = Array.from(new Set(cardsData.map((card) => card.category)));
+  const categories = Array.from(new Set(cardsData.map((card) => card.kategori)));
 
   const subcategories =
     filteredCategory !== 'YKS Hazırlık'
       ? Array.from(
           new Set(
             cardsData
-              .filter((card) => card.category === filteredCategory)
-              .map((card) => card.subcategory)
+              .filter((card) => card.kategori === filteredCategory)
+              .map((card) => card.altkategori)
           )
         )
       : [];
@@ -74,36 +74,36 @@ export default function Index() {
       ? Array.from(
           new Set(
             cardsData
-              .filter((card) => card.subcategory === filteredSubcategory)
-              .map((card) => card.subsubcategory)
+              .filter((card) => card.altkategori === filteredSubcategory)
+              .map((card) => card.altaltkategori)
           )
         )
       : [];
 
-  const handleFilter = (category: string) => {
-    setFilteredCategory(category);
+  const handleFilter = (kategori: string) => {
+    setFilteredCategory(kategori);
     setFilteredSubcategory('');
     setFilteredSubsubcategory('');
     const params = new URLSearchParams();
-    params.set('category', category);
+    params.set('kategori', kategori);
     window.history.pushState(null, '', `?${params.toString()}`);
   };
 
-  const handleSubcategoryFilter = (subcategory: string) => {
-    setFilteredSubcategory(subcategory);
+  const handleSubcategoryFilter = (altkategori: string) => {
+    setFilteredSubcategory(altkategori);
     setFilteredSubsubcategory('');
     const params = new URLSearchParams(window.location.search);
-    params.set('category', filteredCategory);
-    params.set('subcategory', subcategory);
+    params.set('kategori', filteredCategory);
+    params.set('altkategori', altkategori);
     window.history.pushState(null, '', `?${params.toString()}`);
   };
 
-  const handleSubsubcategoryFilter = (subsubcategory: string) => {
-    setFilteredSubsubcategory(subsubcategory);
+  const handleSubsubcategoryFilter = (altaltkategori: string) => {
+    setFilteredSubsubcategory(altaltkategori);
     const params = new URLSearchParams(window.location.search);
-    params.set('category', filteredCategory);
-    params.set('subcategory', filteredSubcategory);
-    params.set('subsubcategory', subsubcategory);
+    params.set('kategori', filteredCategory);
+    params.set('altkategori', filteredSubcategory);
+    params.set('altaltkategori', altaltkategori);
     window.history.pushState(null, '', `?${params.toString()}`);
   };
 
@@ -112,19 +112,19 @@ export default function Index() {
 
     if (filteredCategory !== 'YKS Hazırlık') {
       updatedFilteredCards = updatedFilteredCards.filter(
-        (card) => card.category === filteredCategory
+        (card) => card.kategori === filteredCategory
       );
     }
 
     if (filteredSubcategory !== '') {
       updatedFilteredCards = updatedFilteredCards.filter(
-        (card) => card.subcategory === filteredSubcategory
+        (card) => card.altkategori === filteredSubcategory
       );
     }
 
     if (filteredSubsubcategory !== '') {
       updatedFilteredCards = updatedFilteredCards.filter(
-        (card) => card.subsubcategory === filteredSubsubcategory
+        (card) => card.altaltkategori === filteredSubsubcategory
       );
     }
 
@@ -135,10 +135,10 @@ export default function Index() {
     const videoCards: { [key: string]: CardData | null } = {};
     const bookCards: { [key: string]: CardData | null } = {};
 
-    categories.forEach((category) => {
-      const filteredCategoryCards = cardsData.filter((card) => card.category === category);
-      videoCards[category] = filteredCategoryCards.find((card) => card.videoUrl) || null;
-      bookCards[category] = filteredCategoryCards.find((card) => card.shopifyProductId) || null;
+    categories.forEach((kategori) => {
+      const filteredCategoryCards = cardsData.filter((card) => card.kategori === kategori);
+      videoCards[kategori] = filteredCategoryCards.find((card) => card.videoUrl) || null;
+      bookCards[kategori] = filteredCategoryCards.find((card) => card.shopifyProductId) || null;
     });
 
     setSelectedVideoCard(videoCards);
@@ -160,6 +160,7 @@ export default function Index() {
         margin: '0 auto',
       }}
     >
+      {/* Filter Buttons */}
       <div
         style={{
           marginTop: '20px',
@@ -173,25 +174,26 @@ export default function Index() {
           boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.2)',
         }}
       >
-        {['YKS Hazırlık', ...categories].map((category) => (
+        {['YKS Hazırlık', ...categories].map((kategori) => (
           <button
-            key={category}
-            onClick={() => handleFilter(category)}
+            key={kategori}
+            onClick={() => handleFilter(kategori)}
             style={{
               padding: '10px 20px',
               cursor: 'pointer',
               borderRadius: '25px',
               border: 'none',
-              backgroundColor: filteredCategory === category ? '#6c63ff' : '#fff',
-              color: filteredCategory === category ? '#fff' : '#6c63ff',
+              backgroundColor: filteredCategory === kategori ? '#6c63ff' : '#fff',
+              color: filteredCategory === kategori ? '#fff' : '#6c63ff',
               boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
               transition: 'background-color 0.3s ease, color 0.3s ease',
             }}
           >
-            {category}
+            {kategori}
           </button>
         ))}
       </div>
+      {/* Video and Book Components */}
       {filteredCategory === 'YKS Hazırlık' && (
         <div
           style={{
@@ -343,6 +345,7 @@ export default function Index() {
           )}
         </div>
       )}
+      {/* Subcategories Filter Buttons */}
       {subcategories.length > 0 && (
         <div
           style={{
@@ -357,26 +360,27 @@ export default function Index() {
             boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.15)',
           }}
         >
-          {subcategories.map((subcategory) => (
+          {subcategories.map((altkategori) => (
             <button
-              key={subcategory}
-              onClick={() => handleSubcategoryFilter(subcategory)}
+              key={altkategori}
+              onClick={() => handleSubcategoryFilter(altkategori)}
               style={{
                 padding: '10px 20px',
                 cursor: 'pointer',
                 borderRadius: '25px',
                 border: 'none',
-                backgroundColor: filteredSubcategory === subcategory ? '#28a745' : '#fff',
-                color: filteredSubcategory === subcategory ? '#fff' : '#28a745',
+                backgroundColor: filteredSubcategory === altkategori ? '#28a745' : '#fff',
+                color: filteredSubcategory === altkategori ? '#fff' : '#28a745',
                 boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
                 transition: 'background-color 0.3s ease, color 0.3s ease',
               }}
             >
-              {subcategory}
+              {altkategori}
             </button>
           ))}
         </div>
       )}
+      {/* Subsubcategories Filter Buttons */}
       {subsubcategories.length > 0 && (
         <div
           style={{
@@ -391,26 +395,27 @@ export default function Index() {
             boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.15)',
           }}
         >
-          {subsubcategories.map((subsubcategory) => (
+          {subsubcategories.map((altaltkategori) => (
             <button
-              key={subsubcategory}
-              onClick={() => handleSubsubcategoryFilter(subsubcategory)}
+              key={altaltkategori}
+              onClick={() => handleSubsubcategoryFilter(altaltkategori)}
               style={{
                 padding: '10px 20px',
                 cursor: 'pointer',
                 borderRadius: '25px',
                 border: 'none',
-                backgroundColor: filteredSubsubcategory === subsubcategory ? '#ff6347' : '#fff',
-                color: filteredSubsubcategory === subsubcategory ? '#fff' : '#ff6347',
+                backgroundColor: filteredSubsubcategory === altaltkategori ? '#ff6347' : '#fff',
+                color: filteredSubsubcategory === altaltkategori ? '#fff' : '#ff6347',
                 boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
                 transition: 'background-color 0.3s ease, color 0.3s ease',
               }}
             >
-              {subsubcategory}
+              {altaltkategori}
             </button>
           ))}
         </div>
       )}
+      {/* Filtered Cards */}
       <div style={{ marginTop: '20px', width: '100%' }}>
         {filteredCards.length > 0 ? (
           <div
