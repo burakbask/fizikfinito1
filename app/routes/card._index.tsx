@@ -29,7 +29,7 @@ export default function Index() {
   const [seviye, setSeviye] = useState<number>(0);
   const [kampKitabi, setKampKitabi] = useState<string>('');
   const [kursAciklamasi, setKursAciklamasi] = useState<string>('');
-  const [filteredCategory, setFilteredCategory] = useState<string>('Tüm Sınıflar');
+  const [filteredCategory, setFilteredCategory] = useState<string>('YKS Hazırlık');
   const [filteredSubcategory, setFilteredSubcategory] = useState<string>('');
   const [filteredSubsubcategory, setFilteredSubsubcategory] = useState<string>('');
   const [filteredCards, setFilteredCards] = useState<CardData[]>([]);
@@ -59,7 +59,7 @@ export default function Index() {
   const categories = Array.from(new Set(cardsData.map((card) => card.category)));
 
   const subcategories =
-    filteredCategory !== 'Tüm Sınıflar'
+    filteredCategory !== 'YKS Hazırlık'
       ? Array.from(
           new Set(
             cardsData
@@ -110,7 +110,7 @@ export default function Index() {
   useEffect(() => {
     let updatedFilteredCards = cardsData;
 
-    if (filteredCategory !== 'Tüm Sınıflar') {
+    if (filteredCategory !== 'YKS Hazırlık') {
       updatedFilteredCards = updatedFilteredCards.filter(
         (card) => card.category === filteredCategory
       );
@@ -173,7 +173,7 @@ export default function Index() {
           boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.2)',
         }}
       >
-        {['Tüm Sınıflar', ...categories].map((category) => (
+        {['YKS Hazırlık', ...categories].map((category) => (
           <button
             key={category}
             onClick={() => handleFilter(category)}
@@ -192,7 +192,7 @@ export default function Index() {
           </button>
         ))}
       </div>
-      {filteredCategory === 'Tüm Sınıflar' && (
+      {filteredCategory === 'YKS Hazırlık' && (
         <div
           style={{
             marginTop: '20px',
@@ -265,7 +265,7 @@ export default function Index() {
           </div>
         </div>
       )}
-      {filteredCategory !== 'Tüm Sınıflar' && (
+      {filteredCategory !== 'YKS Hazırlık' && (
         <div
           style={{
             marginTop: '20px',
@@ -484,7 +484,7 @@ export default function Index() {
                     <h3 style={{ color: '#007bff', marginBottom: '10px', whiteSpace: 'normal', overflow: 'visible', textOverflow: 'unset' }}>{card.kursBasligi}</h3>
                     <p style={{ color: '#555', marginBottom: '5px' }}><strong>Kimler İçin:</strong> {card.kimlerIcin}</p>
                     <p style={{ color: '#555', marginBottom: '5px' }}><strong>Süresi Ne Kadar:</strong> {card.suresi}</p>
-                    <p style={{ color: '#555', marginBottom: '5px' }}><strong>Seviye:</strong> {card.seviye} / 5</p>
+                    <p style={{ color: '#555', marginBottom: '5px' }}><strong>Seviye:</strong> {card.seviye}</p>
                     <p style={{ color: '#555', marginBottom: '5px' }}><strong>Kamp Kitabı:</strong> {card.kampKitabi}</p>
                     <p style={{ color: '#555', whiteSpace: 'normal', overflow: 'visible', textOverflow: 'unset' }}><strong>Kurs Açıklaması: </strong>{card.kursAciklamasi}</p>
                   </div>
