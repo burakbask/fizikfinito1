@@ -29,6 +29,19 @@ export default function Index() {
   const [filteredCategory, setFilteredCategory] = useState<string>('Tüm Sınıflar');
   const [filteredSubcategory, setFilteredSubcategory] = useState<string>('');
   const [filteredSubsubcategory, setFilteredSubsubcategory] = useState<string>('');
+
+  // Açılışta alt kategori ve alt alt kategoriler de gösterilsin
+  useEffect(() => {
+    if (subcategories.length > 0) {
+      setFilteredSubcategory(subcategories[0]);
+    }
+  }, [filteredCategory]);
+
+  useEffect(() => {
+    if (subsubcategories.length > 0) {
+      setFilteredSubsubcategory(subsubcategories[0]);
+    }
+  }, [filteredSubcategory]);
   const [filteredCards, setFilteredCards] = useState<CardData[]>(cardsData);
   const [selectedVideoCard, setSelectedVideoCard] = useState<{ [key: string]: CardData | null }>({});
   const [selectedBookCard, setSelectedBookCard] = useState<{ [key: string]: CardData | null }>({});
@@ -134,9 +147,13 @@ export default function Index() {
         style={{
           marginTop: '20px',
           display: 'flex',
-          gap: '15px',
+          gap: '20px',
           flexWrap: 'wrap',
           justifyContent: 'center',
+          background: 'linear-gradient(135deg, #ece9e6, #ffffff)',
+          padding: '20px',
+          borderRadius: '25px',
+          boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.2)',
         }}
       >
         {['Tüm Sınıflar', ...categories].map((category) => (
@@ -158,6 +175,80 @@ export default function Index() {
           </button>
         ))}
       </div>
+      {filteredCategory === 'Tüm Sınıflar' && (
+        <div
+          style={{
+            marginTop: '20px',
+            display: 'flex',
+            gap: '15px',
+            justifyContent: 'center',
+            alignItems: 'flex-start',
+            width: '100%',
+            backgroundColor: '#ffffff',
+            padding: '10px',
+            borderRadius: '15px',
+            flexWrap: 'wrap',
+          }}
+        >
+          <div
+            style={{
+              flex: 3,
+              backgroundColor: '#ffffff',
+              borderRadius: '15px',
+              boxShadow: '15px 15px 15px rgba(0, 0, 0, 0.1)',
+              padding: '0',
+              textAlign: 'center',
+              width: '100%',
+              maxWidth: '700px',
+              height: 'auto',
+              aspectRatio: '16 / 9',
+              overflow: 'hidden',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              margin: '0 auto',
+            }}
+          >
+            <iframe
+              width="100%"
+              height="400px"
+              src="https://www.youtube.com/embed/Bg0YEuJgB3s"
+              title="YouTube video player"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              style={{
+                borderRadius: '15px',
+                boxShadow: '0px 8px 30px rgba(0, 0, 0, 0.2)',
+                objectFit: 'cover',
+                marginBottom: '0',
+                paddingBottom: '0',
+              }}
+            ></iframe>
+          </div>
+          <div
+            style={{
+              flex: 1,
+              backgroundColor: '#ffffff',
+              borderRadius: '15px',
+              boxShadow: '0px 8px 15px rgba(0, 0, 0, 0.1)',
+              padding: '10px',
+              textAlign: 'center',
+              maxWidth: 'auto',
+            }}
+          >
+            <div
+              style={{
+                textAlign: 'center',
+                width: '100%',
+              }}
+            >
+              {/* Shopify ürün bileşeni */}
+              <ShopifyScriptComponent productId="9849553518897" />
+            </div>
+          </div>
+        </div>
+      )}
       {filteredCategory !== 'Tüm Sınıflar' && (
         <div
           style={{
@@ -242,11 +333,15 @@ export default function Index() {
       {subcategories.length > 0 && (
         <div
           style={{
-            marginTop: '20px',
-            display: 'flex',
-            gap: '15px',
-            flexWrap: 'wrap',
-            justifyContent: 'center',
+          marginTop: '20px',
+          display: 'flex',
+          gap: '20px',
+          flexWrap: 'wrap',
+          justifyContent: 'center',
+          background: 'linear-gradient(135deg, #f9f9f9, #ffffff)',
+          padding: '20px',
+          borderRadius: '25px',
+          boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.15)',
           }}
         >
           {subcategories.map((subcategory) => (
@@ -270,15 +365,21 @@ export default function Index() {
         </div>
       )}
       {subsubcategories.length > 0 && (
+        
         <div
-          style={{
-            marginTop: '20px',
-            display: 'flex',
-            gap: '15px',
-            flexWrap: 'wrap',
-            justifyContent: 'center',
-          }}
-        >
+        style={{
+        marginTop: '20px',
+        display: 'flex',
+        gap: '20px',
+        flexWrap: 'wrap',
+        justifyContent: 'center',
+        background: 'linear-gradient(135deg, #f9f9f9, #ffffff)',
+        padding: '20px',
+        borderRadius: '25px',
+        boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.15)',
+        }}
+      >
+
           {subsubcategories.map((subsubcategory) => (
             <button
               key={subsubcategory}
@@ -304,8 +405,7 @@ export default function Index() {
           <div
             style={{
               display: 'flex',
-              flexDirection: 'row',
-              flexWrap: 'wrap',
+              flexDirection: 'column',
               gap: '20px',
               alignItems: 'center',
               width: '100%',
@@ -316,7 +416,7 @@ export default function Index() {
               <Link
                 key={card.id}
                 to={`/card/${card.slug}`}
-                style={{ textDecoration: 'none', color: 'inherit', width: 'calc(50% - 20px)', display: 'flex', justifyContent: 'center' }}
+                style={{ textDecoration: 'none', color: 'inherit', width: '100%', display: 'flex', justifyContent: 'center' }}
               >
                 <div
                   style={{
@@ -371,8 +471,8 @@ export default function Index() {
                       textAlign: 'left',
                     }}
                   >
-                    <h3 style={{ color: '#007bff', marginBottom: '10px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{card.title}</h3>
-                    <p style={{ color: '#555', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{card.description}</p>
+                    <h3 style={{ color: '#007bff', marginBottom: '10px', whiteSpace: 'normal', overflow: 'visible', textOverflow: 'unset' }}>{card.title}</h3>
+                    <p style={{ color: '#555', whiteSpace: 'normal', overflow: 'visible', textOverflow: 'unset' }}>{card.description}</p>
                   </div>
                 </div>
               </Link>
