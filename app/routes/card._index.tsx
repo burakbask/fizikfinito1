@@ -4,21 +4,18 @@ import { json } from '@remix-run/node';
 import { getCollectionItems } from '~/utils/directusClient';
 import ShopifyScriptComponent from './book';
 
-// Kart veri tipini tanımlıyoruz
 type CardData = {
-  id: string;
-  slug: string;
-  title: string;
-  category: string;
-  subcategory: string;
-  subsubcategory?: string;
-  description: string;
-  image?: string; // URL olarak çekilecek
+  kursBasligi: string;
+  kimlerIcin: string;
+  suresi: string;
+  seviye: number;
+  kampKitabi: string;
+  kursAciklamasi: string;
+  image?: string;
   videoUrl?: string;
   shopifyProductId?: string;
 };
 
-// Directus'tan tüm kart verilerini çekiyoruz
 export const loader = async () => {
   const cardsData: CardData[] = await getCollectionItems('cards');
   return json({ cardsData });
@@ -26,30 +23,41 @@ export const loader = async () => {
 
 export default function Index() {
   const { cardsData } = useLoaderData<typeof loader>();
+  const [kursBasligi, setKursBasligi] = useState<string>('');
+  const [kimlerIcin, setKimlerIcin] = useState<string>('');
+  const [suresi, setSuresi] = useState<string>('');
+  const [seviye, setSeviye] = useState<number>(0);
+  const [kampKitabi, setKampKitabi] = useState<string>('');
+  const [kursAciklamasi, setKursAciklamasi] = useState<string>('');
   const [filteredCategory, setFilteredCategory] = useState<string>('Tüm Sınıflar');
   const [filteredSubcategory, setFilteredSubcategory] = useState<string>('');
   const [filteredSubsubcategory, setFilteredSubsubcategory] = useState<string>('');
+  const [filteredCards, setFilteredCards] = useState<CardData[]>([]);
+  const [selectedVideoCard, setSelectedVideoCard] = useState<{ [key: string]: CardData | null }>({});
+  const [selectedBookCard, setSelectedBookCard] = useState<{ [key: string]: CardData | null }>({});
 
-  // Açılışta alt kategori ve alt alt kategoriler de gösterilsin
+  useEffect(() => {
+    setFilteredCards(cardsData);
+  }, [cardsData]);
+
   useEffect(() => {
     if (subcategories.length > 0) {
       setFilteredSubcategory(subcategories[0]);
+    } else {
+      setFilteredSubcategory('');
     }
   }, [filteredCategory]);
 
   useEffect(() => {
     if (subsubcategories.length > 0) {
       setFilteredSubsubcategory(subsubcategories[0]);
+    } else {
+      setFilteredSubsubcategory('');
     }
   }, [filteredSubcategory]);
-  const [filteredCards, setFilteredCards] = useState<CardData[]>(cardsData);
-  const [selectedVideoCard, setSelectedVideoCard] = useState<{ [key: string]: CardData | null }>({});
-  const [selectedBookCard, setSelectedBookCard] = useState<{ [key: string]: CardData | null }>({});
 
-  // Dinamik olarak kategorileri elde ediyoruz
   const categories = Array.from(new Set(cardsData.map((card) => card.category)));
 
-  // Dinamik olarak alt kategorileri elde ediyoruz
   const subcategories =
     filteredCategory !== 'Tüm Sınıflar'
       ? Array.from(
@@ -61,7 +69,6 @@ export default function Index() {
         )
       : [];
 
-  // Dinamik olarak alt alt kategorileri elde ediyoruz
   const subsubcategories =
     filteredSubcategory !== ''
       ? Array.from(
@@ -75,20 +82,31 @@ export default function Index() {
 
   const handleFilter = (category: string) => {
     setFilteredCategory(category);
-    setFilteredSubcategory(''); // Alt kategori seçimi sıfırlanır
-    setFilteredSubsubcategory(''); // Alt alt kategori seçimi sıfırlanır
+    setFilteredSubcategory('');
+    setFilteredSubsubcategory('');
+    const params = new URLSearchParams();
+    params.set('category', category);
+    window.history.pushState(null, '', `?${params.toString()}`);
   };
 
   const handleSubcategoryFilter = (subcategory: string) => {
     setFilteredSubcategory(subcategory);
-    setFilteredSubsubcategory(''); // Alt alt kategori seçimi sıfırlanır
+    setFilteredSubsubcategory('');
+    const params = new URLSearchParams(window.location.search);
+    params.set('category', filteredCategory);
+    params.set('subcategory', subcategory);
+    window.history.pushState(null, '', `?${params.toString()}`);
   };
 
   const handleSubsubcategoryFilter = (subsubcategory: string) => {
     setFilteredSubsubcategory(subsubcategory);
+    const params = new URLSearchParams(window.location.search);
+    params.set('category', filteredCategory);
+    params.set('subcategory', filteredSubcategory);
+    params.set('subsubcategory', subsubcategory);
+    window.history.pushState(null, '', `?${params.toString()}`);
   };
 
-  // Filtreleme işlemi - kategori, alt kategori ve alt alt kategori değiştiğinde güncellenir
   useEffect(() => {
     let updatedFilteredCards = cardsData;
 
@@ -111,9 +129,8 @@ export default function Index() {
     }
 
     setFilteredCards(updatedFilteredCards);
-  }, [filteredCategory, filteredSubcategory, filteredSubsubcategory]);
+  }, [filteredCategory, filteredSubcategory, filteredSubsubcategory, cardsData]);
 
-  // Her kategori için tek bir video ve kitap verisi seçme
   useEffect(() => {
     const videoCards: { [key: string]: CardData | null } = {};
     const bookCards: { [key: string]: CardData | null } = {};
@@ -126,7 +143,7 @@ export default function Index() {
 
     setSelectedVideoCard(videoCards);
     setSelectedBookCard(bookCards);
-  }, [filteredCategory, cardsData]);
+  }, [categories, cardsData]);
 
   return (
     <div
@@ -243,7 +260,6 @@ export default function Index() {
                 width: '100%',
               }}
             >
-              {/* Shopify ürün bileşeni */}
               <ShopifyScriptComponent productId="9849553518897" />
             </div>
           </div>
@@ -264,7 +280,6 @@ export default function Index() {
             flexWrap: 'wrap',
           }}
         >
-          {/* Video Bileşeni */}
           {selectedVideoCard[filteredCategory] && selectedVideoCard[filteredCategory]?.videoUrl && (
             <div
               style={{
@@ -304,7 +319,6 @@ export default function Index() {
             </div>
           )}
 
-          {/* Kitap Bileşeni */}
           {selectedBookCard[filteredCategory] && selectedBookCard[filteredCategory]?.shopifyProductId && (
             <div
               style={{
@@ -323,7 +337,6 @@ export default function Index() {
                   width: '100%',
                 }}
               >
-                {/* Shopify ürün bileşeni */}
                 <ShopifyScriptComponent productId={selectedBookCard[filteredCategory]?.shopifyProductId} />
               </div>
             </div>
@@ -333,15 +346,15 @@ export default function Index() {
       {subcategories.length > 0 && (
         <div
           style={{
-          marginTop: '20px',
-          display: 'flex',
-          gap: '20px',
-          flexWrap: 'wrap',
-          justifyContent: 'center',
-          background: 'linear-gradient(135deg, #f9f9f9, #ffffff)',
-          padding: '20px',
-          borderRadius: '25px',
-          boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.15)',
+            marginTop: '20px',
+            display: 'flex',
+            gap: '20px',
+            flexWrap: 'wrap',
+            justifyContent: 'center',
+            background: 'linear-gradient(135deg, #f9f9f9, #ffffff)',
+            padding: '20px',
+            borderRadius: '25px',
+            boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.15)',
           }}
         >
           {subcategories.map((subcategory) => (
@@ -365,21 +378,19 @@ export default function Index() {
         </div>
       )}
       {subsubcategories.length > 0 && (
-        
         <div
-        style={{
-        marginTop: '20px',
-        display: 'flex',
-        gap: '20px',
-        flexWrap: 'wrap',
-        justifyContent: 'center',
-        background: 'linear-gradient(135deg, #f9f9f9, #ffffff)',
-        padding: '20px',
-        borderRadius: '25px',
-        boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.15)',
-        }}
-      >
-
+          style={{
+            marginTop: '20px',
+            display: 'flex',
+            gap: '20px',
+            flexWrap: 'wrap',
+            justifyContent: 'center',
+            background: 'linear-gradient(135deg, #f9f9f9, #ffffff)',
+            padding: '20px',
+            borderRadius: '25px',
+            boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.15)',
+          }}
+        >
           {subsubcategories.map((subsubcategory) => (
             <button
               key={subsubcategory}
@@ -416,7 +427,7 @@ export default function Index() {
               <Link
                 key={card.id}
                 to={`/card/${card.slug}`}
-                style={{ textDecoration: 'none', color: 'inherit', width: '100%', display: 'flex', justifyContent: 'center' }}
+                style={{ textDecoration: 'none', color: 'inherit', width: '100%', display: 'flex', justifyContent: 'center', maxWidth: '1200px' }}
               >
                 <div
                   style={{
@@ -429,9 +440,8 @@ export default function Index() {
                     overflow: 'hidden',
                     transition: 'transform 0.3s ease',
                     backgroundColor: '#fff',
-                    maxWidth: '450px',
                     width: '100%',
-                    textAlign: 'left',
+                    textAlign: 'left'
                   }}
                 >
                   {card.videoUrl ? (
@@ -471,8 +481,12 @@ export default function Index() {
                       textAlign: 'left',
                     }}
                   >
-                    <h3 style={{ color: '#007bff', marginBottom: '10px', whiteSpace: 'normal', overflow: 'visible', textOverflow: 'unset' }}>{card.title}</h3>
-                    <p style={{ color: '#555', whiteSpace: 'normal', overflow: 'visible', textOverflow: 'unset' }}>{card.description}</p>
+                    <h3 style={{ color: '#007bff', marginBottom: '10px', whiteSpace: 'normal', overflow: 'visible', textOverflow: 'unset' }}>{card.kursBasligi}</h3>
+                    <p style={{ color: '#555', marginBottom: '5px' }}><strong>Kimler İçin:</strong> {card.kimlerIcin}</p>
+                    <p style={{ color: '#555', marginBottom: '5px' }}><strong>Süresi Ne Kadar:</strong> {card.suresi}</p>
+                    <p style={{ color: '#555', marginBottom: '5px' }}><strong>Seviye:</strong> {card.seviye} / 5</p>
+                    <p style={{ color: '#555', marginBottom: '5px' }}><strong>Kamp Kitabı:</strong> {card.kampKitabi}</p>
+                    <p style={{ color: '#555', whiteSpace: 'normal', overflow: 'visible', textOverflow: 'unset' }}><strong>Kurs Açıklaması: </strong>{card.kursAciklamasi}</p>
                   </div>
                 </div>
               </Link>
