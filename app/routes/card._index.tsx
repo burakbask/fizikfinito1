@@ -442,7 +442,16 @@ export default function Index() {
                     transition: 'transform 0.3s ease',
                     backgroundColor: '#fff',
                     width: '100%',
-                    textAlign: 'left'
+                    textAlign: 'left',
+                    position: 'relative',
+                  }}
+                  onMouseEnter={(e) => {
+                    const detayButton = e.currentTarget.querySelector('.detay-button');
+                    if (detayButton) detayButton.style.right = '0';
+                  }}
+                  onMouseLeave={(e) => {
+                    const detayButton = e.currentTarget.querySelector('.detay-button');
+                    if (detayButton) detayButton.style.right = '-80px';
                   }}
                 >
                   {card.videoUrl ? (
@@ -480,6 +489,8 @@ export default function Index() {
                       justifyContent: 'center',
                       alignItems: 'flex-start',
                       textAlign: 'left',
+                      position: 'relative',
+                      width: '100%',
                     }}
                   >
                     <h3 style={{ color: '#007bff', marginBottom: '10px', whiteSpace: 'normal', overflow: 'visible', textOverflow: 'unset' }}>{card.kursBasligi}</h3>
@@ -487,7 +498,34 @@ export default function Index() {
                     <p style={{ color: '#555', marginBottom: '5px' }}><strong>Süresi Ne Kadar:</strong> {card.suresi}</p>
                     <p style={{ color: '#555', marginBottom: '5px' }}><strong>Seviye:</strong> {card.seviye}</p>
                     <p style={{ color: '#555', marginBottom: '5px' }}><strong>Kamp Kitabı:</strong> {card.kampKitabi}</p>
+                    <hr style={{
+                      border: 'none',
+                      height: '2px',
+                      background: 'linear-gradient(to right, #ff8c00, #ff0080, #8a2be2)',
+                      width: '100%',
+                      margin: '10px 0',
+                    }} />
                     <p style={{ color: '#555', whiteSpace: 'normal', overflow: 'visible', textOverflow: 'unset' }}><strong>Kurs Açıklaması: </strong>{card.kursAciklamasi}</p>
+                    <div
+                      style={{
+                        position: 'absolute',
+                        right: '-80px',
+                        top: '0',
+                        bottom: '0',
+                        background: 'linear-gradient(to right, #ff8c00, #ff0080)',
+                        color: '#fff',
+                        padding: '5px 15px',
+                        borderRadius: '0 25px 25px 0',
+                        fontWeight: 'bold',
+                        transition: 'right 0.3s ease',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                      className="detay-button"
+                    >
+                      DETAY
+                    </div>
                   </div>
                 </div>
               </Link>
