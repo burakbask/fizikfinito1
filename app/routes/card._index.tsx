@@ -36,26 +36,6 @@ export default function Index() {
   const [selectedVideoCard, setSelectedVideoCard] = useState<{ [key: string]: CardData | null }>({});
   const [selectedBookCard, setSelectedBookCard] = useState<{ [key: string]: CardData | null }>({});
 
-  useEffect(() => {
-    setFilteredCards(cardsData);
-  }, [cardsData]);
-
-  useEffect(() => {
-    if (subcategories.length > 0) {
-      setFilteredSubcategory(subcategories[0]);
-    } else {
-      setFilteredSubcategory('');
-    }
-  }, [filteredCategory]);
-
-  useEffect(() => {
-    if (subsubcategories.length > 0) {
-      setFilteredSubsubcategory(subsubcategories[0]);
-    } else {
-      setFilteredSubsubcategory('');
-    }
-  }, [filteredSubcategory]);
-
   const categories = Array.from(new Set(cardsData.map((card) => card.kategori)));
 
   const subcategories =
@@ -79,6 +59,22 @@ export default function Index() {
           )
         )
       : [];
+
+  useEffect(() => {
+    setFilteredCards(cardsData);
+  }, [cardsData]);
+
+  useEffect(() => {
+    if (subcategories.length > 0 && !subcategories.includes(filteredSubcategory)) {
+      setFilteredSubcategory(subcategories[0] || '');
+    }
+  }, [filteredCategory, subcategories]);
+  
+  useEffect(() => {
+    if (subsubcategories.length > 0 && !subsubcategories.includes(filteredSubsubcategory)) {
+      setFilteredSubsubcategory(subsubcategories[0] || '');
+    }
+  }, [filteredSubcategory, subsubcategories]);
 
   const handleFilter = (kategori: string) => {
     setFilteredCategory(kategori);
@@ -143,7 +139,7 @@ export default function Index() {
 
     setSelectedVideoCard(videoCards);
     setSelectedBookCard(bookCards);
-  }, [categories, cardsData]);
+  }, [cardsData]);
 
   return (
     <div
