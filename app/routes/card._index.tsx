@@ -3,6 +3,7 @@ import { Link, useLoaderData } from '@remix-run/react';
 import { json } from '@remix-run/node';
 import { getCollectionItems } from '~/utils/directusClient';
 import ShopifyScriptComponent from './book';
+import { useMediaQuery } from 'react-responsive';
 
 type CardData = {
   id: string;
@@ -35,6 +36,8 @@ export default function Index() {
   const [filteredCards, setFilteredCards] = useState<CardData[]>([]);
   const [selectedVideoCard, setSelectedVideoCard] = useState<{ [key: string]: CardData | null }>({});
   const [selectedBookCard, setSelectedBookCard] = useState<{ [key: string]: CardData | null }>({});
+
+  const isMobile = useMediaQuery({ query: '(max-width: 768px)' });
 
   const categories = Array.from(new Set(cardsData.map((card) => card.kategori)));
 
@@ -150,9 +153,9 @@ export default function Index() {
         textAlign: 'center',
         backgroundColor: '#f0f4f8',
         minHeight: '100vh',
-        padding: '20px',
+        padding: isMobile ? '10px' : '20px',
         width: '100%',
-        maxWidth: '1000px',
+        maxWidth: isMobile ? '100%' : '1000px',
         margin: '0 auto',
       }}
     >
@@ -161,11 +164,11 @@ export default function Index() {
         style={{
           marginTop: '20px',
           display: 'flex',
-          gap: '20px',
+          gap: isMobile ? '10px' : '20px',
           flexWrap: 'wrap',
           justifyContent: 'center',
           background: 'linear-gradient(135deg, #ece9e6, #ffffff)',
-          padding: '20px',
+          padding: isMobile ? '10px' : '20px',
           borderRadius: '25px',
           boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.2)',
         }}
@@ -175,7 +178,7 @@ export default function Index() {
             key={kategori}
             onClick={() => handleFilter(kategori)}
             style={{
-              padding: '10px 20px',
+              padding: isMobile ? '5px 10px' : '10px 20px',
               cursor: 'pointer',
               borderRadius: '25px',
               border: 'none',
@@ -195,14 +198,15 @@ export default function Index() {
           style={{
             marginTop: '20px',
             display: 'flex',
-            gap: '15px',
+            gap: isMobile ? '10px' : '15px',
             justifyContent: 'center',
             alignItems: 'flex-start',
             width: '100%',
             backgroundColor: '#ffffff',
             padding: '10px',
             borderRadius: '15px',
-            flexWrap: 'wrap',
+            flexWrap: isMobile ? 'wrap' : 'nowrap',
+            flexDirection: isMobile ? 'column' : 'row',
           }}
         >
           <div
@@ -214,7 +218,7 @@ export default function Index() {
               padding: '0',
               textAlign: 'center',
               width: '100%',
-              maxWidth: '700px',
+              maxWidth: isMobile ? '100%' : '700px',
               height: 'auto',
               aspectRatio: '16 / 9',
               overflow: 'hidden',
@@ -226,7 +230,7 @@ export default function Index() {
           >
             <iframe
               width="100%"
-              height="400px"
+              height={isMobile ? '200px' : '400px'}
               src="https://www.youtube.com/embed/Bg0YEuJgB3s"
               title="YouTube video player"
               frameBorder="0"
@@ -268,14 +272,15 @@ export default function Index() {
           style={{
             marginTop: '20px',
             display: 'flex',
-            gap: '15px',
+            gap: isMobile ? '10px' : '15px',
             justifyContent: 'center',
             alignItems: 'flex-start',
             width: '100%',
             backgroundColor: '#ffffff',
             padding: '10px',
             borderRadius: '15px',
-            flexWrap: 'wrap',
+            flexWrap: isMobile ? 'wrap' : 'nowrap',
+            flexDirection: isMobile ? 'column' : 'row',
           }}
         >
           {selectedVideoCard[filteredCategory] && selectedVideoCard[filteredCategory]?.videoUrl && (
@@ -288,7 +293,7 @@ export default function Index() {
                 padding: '0',
                 textAlign: 'center',
                 width: '100%',
-                maxWidth: '700px',
+                maxWidth: isMobile ? '100%' : '700px',
                 height: 'auto',
                 aspectRatio: '16 / 9',
                 overflow: 'hidden',
@@ -300,7 +305,7 @@ export default function Index() {
             >
               <iframe
                 width="100%"
-                height="400px"
+                height={isMobile ? '200px' : '400px'}
                 src={`https://www.youtube.com/embed/${selectedVideoCard[filteredCategory]?.videoUrl.split('v=')[1]?.split('&')[0]}`}
                 title="YouTube video player"
                 frameBorder="0"
@@ -347,11 +352,11 @@ export default function Index() {
           style={{
             marginTop: '20px',
             display: 'flex',
-            gap: '20px',
+            gap: isMobile ? '10px' : '20px',
             flexWrap: 'wrap',
             justifyContent: 'center',
             background: 'linear-gradient(135deg, #f9f9f9, #ffffff)',
-            padding: '20px',
+            padding: isMobile ? '10px' : '20px',
             borderRadius: '25px',
             boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.15)',
           }}
@@ -361,7 +366,7 @@ export default function Index() {
               key={altkategori}
               onClick={() => handleSubcategoryFilter(altkategori)}
               style={{
-                padding: '10px 20px',
+                padding: isMobile ? '5px 10px' : '10px 20px',
                 cursor: 'pointer',
                 borderRadius: '25px',
                 border: 'none',
@@ -382,11 +387,11 @@ export default function Index() {
           style={{
             marginTop: '20px',
             display: 'flex',
-            gap: '20px',
+            gap: isMobile ? '10px' : '20px',
             flexWrap: 'wrap',
             justifyContent: 'center',
             background: 'linear-gradient(135deg, #f9f9f9, #ffffff)',
-            padding: '20px',
+            padding: isMobile ? '10px' : '20px',
             borderRadius: '25px',
             boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.15)',
           }}
@@ -396,7 +401,7 @@ export default function Index() {
               key={altaltkategori}
               onClick={() => handleSubsubcategoryFilter(altaltkategori)}
               style={{
-                padding: '10px 20px',
+                padding: isMobile ? '5px 10px' : '10px 20px',
                 cursor: 'pointer',
                 borderRadius: '25px',
                 border: 'none',
@@ -418,7 +423,7 @@ export default function Index() {
             style={{
               display: 'flex',
               flexDirection: 'column',
-              gap: '20px',
+              gap: isMobile ? '10px' : '20px',
               alignItems: 'center',
               width: '100%',
               justifyContent: 'center',
@@ -433,7 +438,7 @@ export default function Index() {
                 <div
                   style={{
                     display: 'flex',
-                    flexDirection: 'row',
+                    flexDirection: isMobile ? 'column' : 'row',
                     marginBottom: '20px',
                     cursor: 'pointer',
                     boxShadow: '0px 4px 15px rgba(0, 0, 0, 0.1)',
@@ -456,15 +461,15 @@ export default function Index() {
                 >
                   {card.videoUrl ? (
                     <iframe
-                      width="150px"
-                      height="150px"
+                      width={isMobile ? '100%' : '150px'}
+                      height={isMobile ? '200px' : '150px'}
                       src={`https://www.youtube.com/embed/${card.videoUrl.split('v=')[1]?.split('&')[0]}`}
                       title="YouTube video player"
                       frameBorder="0"
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                       allowFullScreen
                       style={{
-                        borderRadius: '15px 0 0 15px',
+                        borderRadius: isMobile ? '15px 15px 0 0' : '15px 0 0 15px',
                         boxShadow: '0px 8px 30px rgba(0, 0, 0, 0.2)',
                         objectFit: 'cover',
                       }}
@@ -472,10 +477,10 @@ export default function Index() {
                   ) : (
                     <div
                       style={{
-                        width: '150px',
+                        width: isMobile ? '100%' : '150px',
                         height: '150px',
                         backgroundColor: '#ccc',
-                        borderRadius: '15px 0 0 15px',
+                        borderRadius: isMobile ? '15px 15px 0 0' : '15px 0 0 15px',
                       }}
                     >
                       Görsel Yok
