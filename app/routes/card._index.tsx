@@ -72,12 +72,6 @@ export default function Index() {
       setFilteredSubcategory(subcategories[0] || '');
     }
   }, [filteredCategory, subcategories]);
-  
-  useEffect(() => {
-    if (subsubcategories.length > 0 && !subsubcategories.includes(filteredSubsubcategory)) {
-      setFilteredSubsubcategory(subsubcategories[0] || '');
-    }
-  }, [filteredSubcategory, subsubcategories]);
 
   const handleFilter = (kategori: string) => {
     setFilteredCategory(kategori);
