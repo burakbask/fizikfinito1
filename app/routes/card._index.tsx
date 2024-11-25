@@ -28,6 +28,20 @@ export const loader = async () => {
   return json({ cardsData, categoriesData });
 };
 
+// Utility function to convert Turkish characters to English equivalents
+const normalizeString = (str: string) => {
+  return str
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/ı/g, 'i')
+    .replace(/ç/g, 'c')
+    .replace(/ş/g, 's')
+    .replace(/ö/g, 'o')
+    .replace(/ü/g, 'u')
+    .replace(/ğ/g, 'g')
+    .replace(/\s+/g, '-'); // Replace spaces with hyphens for SEO
+};
+
 export default function Index() {
   const { cardsData, categoriesData } = useLoaderData<typeof loader>();
   const [filteredCategory, setFilteredCategory] = useState<string>('YKS Hazırlık');
@@ -67,37 +81,28 @@ export default function Index() {
     setFilteredCards(cardsData);
   }, [cardsData]);
 
-  useEffect(() => {
-    if (subcategories.length > 0 && !subcategories.includes(filteredSubcategory)) {
-      setFilteredSubcategory(subcategories[0] || '');
-    }
-  }, [filteredCategory, subcategories]);
-
   const handleFilter = (kategori: string) => {
     setFilteredCategory(kategori);
     setFilteredSubcategory('');
     setFilteredSubsubcategory('');
-    const params = new URLSearchParams();
-    params.set('kategori', kategori);
-    window.history.pushState(null, '', `?${params.toString()}`);
+    const normalizedKategori = normalizeString(kategori);
+    window.history.pushState(null, '', `/${normalizedKategori}`);
   };
 
   const handleSubcategoryFilter = (altkategori: string) => {
     setFilteredSubcategory(altkategori);
     setFilteredSubsubcategory('');
-    const params = new URLSearchParams(window.location.search);
-    params.set('kategori', filteredCategory);
-    params.set('altkategori', altkategori);
-    window.history.pushState(null, '', `?${params.toString()}`);
+    const normalizedKategori = normalizeString(filteredCategory);
+    const normalizedAltkategori = normalizeString(altkategori);
+    window.history.pushState(null, '', `/${normalizedKategori}/${normalizedAltkategori}`);
   };
 
   const handleSubsubcategoryFilter = (altaltkategori: string) => {
     setFilteredSubsubcategory(altaltkategori);
-    const params = new URLSearchParams(window.location.search);
-    params.set('kategori', filteredCategory);
-    params.set('altkategori', filteredSubcategory);
-    params.set('altaltkategori', altaltkategori);
-    window.history.pushState(null, '', `?${params.toString()}`);
+    const normalizedKategori = normalizeString(filteredCategory);
+    const normalizedAltkategori = normalizeString(filteredSubcategory);
+    const normalizedAltaltkategori = normalizeString(altaltkategori);
+    window.history.pushState(null, '', `/${normalizedKategori}/${normalizedAltkategori}/${normalizedAltaltkategori}`);
   };
 
   useEffect(() => {
