@@ -59,12 +59,6 @@ const ShopifyScriptComponent = ({ productId }: { productId: string }) => {
                       'margin-right': '5px',
                       'margin-bottom': '225px',
                     },
-                    '@media (max-width: 600px)': {
-                      'max-width': '150px', // Mobilde resmin boyutunu küçültmek için
-                      'margin-left': 'auto',
-                      'margin-right': 'auto',
-                      'margin-bottom': '20px',
-                    },
                   },
                   button: {
                     'font-size': '12px',
@@ -85,7 +79,8 @@ const ShopifyScriptComponent = ({ productId }: { productId: string }) => {
                   description: productElement.hasAttribute('data-description'),
                 },
                 templates: {
-                  title: '',
+                  title:
+                    '',
                   img:
                     '<a class="shopify-buy__product__title" href="{{data.onlineStoreUrl}}" target="_blank">{{#data.currentImage.srcLarge}}<div class="{{data.classes.product.imgWrapper}}" data-element="product.imgWrapper"><img alt="{{data.currentImage.altText}}" data-element="product.img" class="{{data.classes.product.img}}" src="{{data.currentImage.srcLarge}}" /></div>{{/data.currentImage.srcLarge}}</a>',
                 },
