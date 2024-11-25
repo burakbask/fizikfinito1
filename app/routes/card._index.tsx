@@ -461,8 +461,8 @@ export default function Index() {
                 >
                   {card.videoUrl ? (
                     <iframe
-                      width={isMobile ? '100%' : '150px'}
-                      height={isMobile ? '200px' : '150px'}
+                      width={isMobile ? '100%' : '250px'}
+                      height={isMobile ? '200px' : '200px'}
                       src={`https://www.youtube.com/embed/${card.videoUrl.split('v=')[1]?.split('&')[0]}`}
                       title="YouTube video player"
                       frameBorder="0"
