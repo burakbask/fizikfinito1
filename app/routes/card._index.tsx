@@ -32,7 +32,7 @@ export const loader = async () => {
 const normalizeString = (str: string) => {
   return str
     .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[̀-ͯ]/g, '')
     .replace(/ı/g, 'i')
     .replace(/ç/g, 'c')
     .replace(/ş/g, 's')
@@ -50,6 +50,8 @@ export default function Index() {
   const [filteredCards, setFilteredCards] = useState<CardData[]>([]);
   const [selectedVideoCard, setSelectedVideoCard] = useState<{ [key: string]: CardData | null }>({});
   const [selectedBookCard, setSelectedBookCard] = useState<{ [key: string]: CardData | null }>({});
+  const [previousSelectedVideoCard, setPreviousSelectedVideoCard] = useState<{ [key: string]: CardData | null }>({});
+  const [previousSelectedBookCard, setPreviousSelectedBookCard] = useState<{ [key: string]: CardData | null }>({});
 
   const isMobile = useMediaQuery({ query: '(max-width: 768px)' });
 
@@ -87,6 +89,10 @@ export default function Index() {
     setFilteredSubsubcategory('');
     const normalizedKategori = normalizeString(kategori);
     window.history.pushState(null, '', `/${normalizedKategori}`);
+
+    // Show the video and book components again if the main category is selected
+    setSelectedVideoCard(previousSelectedVideoCard);
+    setSelectedBookCard(previousSelectedBookCard);
   };
 
   const handleSubcategoryFilter = (altkategori: string) => {
@@ -95,6 +101,8 @@ export default function Index() {
     const normalizedKategori = normalizeString(filteredCategory);
     const normalizedAltkategori = normalizeString(altkategori);
     window.history.pushState(null, '', `/${normalizedKategori}/${normalizedAltkategori}`);
+    setSelectedVideoCard({});
+    setSelectedBookCard({});
   };
 
   const handleSubsubcategoryFilter = (altaltkategori: string) => {
@@ -141,6 +149,10 @@ export default function Index() {
 
     setSelectedVideoCard(videoCards);
     setSelectedBookCard(bookCards);
+
+    // Save the selected video and book cards to restore later if needed
+    setPreviousSelectedVideoCard(videoCards);
+    setPreviousSelectedBookCard(bookCards);
   }, [cardsData]);
 
   return (
@@ -191,8 +203,78 @@ export default function Index() {
           </button>
         ))}
       </div>
+      {/* Subcategories Filter Buttons */}
+      {filteredCategory !== 'YKS Hazırlık' && subcategories.length > 0 && (
+        <div
+          style={{
+            marginTop: '20px',
+            display: 'flex',
+            gap: isMobile ? '10px' : '20px',
+            flexWrap: 'wrap',
+            justifyContent: 'center',
+            background: 'linear-gradient(135deg, #f9f9f9, #ffffff)',
+            padding: isMobile ? '10px' : '20px',
+            borderRadius: '25px',
+            boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.15)',
+          }}
+        >
+          {subcategories.map((altkategori) => (
+            <button
+              key={altkategori}
+              onClick={() => handleSubcategoryFilter(altkategori)}
+              style={{
+                padding: isMobile ? '5px 10px' : '10px 20px',
+                cursor: 'pointer',
+                borderRadius: '25px',
+                border: 'none',
+                backgroundColor: filteredSubcategory === altkategori ? '#28a745' : '#fff',
+                color: filteredSubcategory === altkategori ? '#fff' : '#28a745',
+                boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
+                transition: 'background-color 0.3s ease, color 0.3s ease',
+              }}
+            >
+              {altkategori}
+            </button>
+          ))}
+        </div>
+      )}
+      {/* Subsubcategories Filter Buttons */}
+      {filteredSubcategory !== '' && subsubcategories.length > 0 && (
+        <div
+          style={{
+            marginTop: '20px',
+            display: 'flex',
+            gap: isMobile ? '10px' : '20px',
+            flexWrap: 'wrap',
+            justifyContent: 'center',
+            background: 'linear-gradient(135deg, #f9f9f9, #ffffff)',
+            padding: isMobile ? '10px' : '20px',
+            borderRadius: '25px',
+            boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.15)',
+          }}
+        >
+          {subsubcategories.map((altaltkategori) => (
+            <button
+              key={altaltkategori}
+              onClick={() => handleSubsubcategoryFilter(altaltkategori)}
+              style={{
+                padding: isMobile ? '5px 10px' : '10px 20px',
+                cursor: 'pointer',
+                borderRadius: '25px',
+                border: 'none',
+                backgroundColor: filteredSubsubcategory === altaltkategori ? '#ff6347' : '#fff',
+                color: filteredSubsubcategory === altaltkategori ? '#fff' : '#ff6347',
+                boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
+                transition: 'background-color 0.3s ease, color 0.3s ease',
+              }}
+            >
+              {altaltkategori}
+            </button>
+          ))}
+        </div>
+      )}
       {/* Video and Book Components */}
-      {filteredCategory === 'YKS Hazırlık' && (
+      {filteredCategory === 'YKS Hazırlık' && filteredSubcategory === '' && (
         <div
           style={{
             marginTop: '20px',
@@ -266,7 +348,7 @@ export default function Index() {
           </div>
         </div>
       )}
-      {filteredCategory !== 'YKS Hazırlık' && (
+      {filteredCategory !== 'YKS Hazırlık' && filteredSubcategory === '' && (
         <div
           style={{
             marginTop: '20px',
@@ -343,76 +425,6 @@ export default function Index() {
               </div>
             </div>
           )}
-        </div>
-      )}
-      {/* Subcategories Filter Buttons */}
-      {subcategories.length > 0 && (
-        <div
-          style={{
-            marginTop: '20px',
-            display: 'flex',
-            gap: isMobile ? '10px' : '20px',
-            flexWrap: 'wrap',
-            justifyContent: 'center',
-            background: 'linear-gradient(135deg, #f9f9f9, #ffffff)',
-            padding: isMobile ? '10px' : '20px',
-            borderRadius: '25px',
-            boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.15)',
-          }}
-        >
-          {subcategories.map((altkategori) => (
-            <button
-              key={altkategori}
-              onClick={() => handleSubcategoryFilter(altkategori)}
-              style={{
-                padding: isMobile ? '5px 10px' : '10px 20px',
-                cursor: 'pointer',
-                borderRadius: '25px',
-                border: 'none',
-                backgroundColor: filteredSubcategory === altkategori ? '#28a745' : '#fff',
-                color: filteredSubcategory === altkategori ? '#fff' : '#28a745',
-                boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
-                transition: 'background-color 0.3s ease, color 0.3s ease',
-              }}
-            >
-              {altkategori}
-            </button>
-          ))}
-        </div>
-      )}
-      {/* Subsubcategories Filter Buttons */}
-      {subsubcategories.length > 0 && (
-        <div
-          style={{
-            marginTop: '20px',
-            display: 'flex',
-            gap: isMobile ? '10px' : '20px',
-            flexWrap: 'wrap',
-            justifyContent: 'center',
-            background: 'linear-gradient(135deg, #f9f9f9, #ffffff)',
-            padding: isMobile ? '10px' : '20px',
-            borderRadius: '25px',
-            boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.15)',
-          }}
-        >
-          {subsubcategories.map((altaltkategori) => (
-            <button
-              key={altaltkategori}
-              onClick={() => handleSubsubcategoryFilter(altaltkategori)}
-              style={{
-                padding: isMobile ? '5px 10px' : '10px 20px',
-                cursor: 'pointer',
-                borderRadius: '25px',
-                border: 'none',
-                backgroundColor: filteredSubsubcategory === altaltkategori ? '#ff6347' : '#fff',
-                color: filteredSubsubcategory === altaltkategori ? '#fff' : '#ff6347',
-                boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
-                transition: 'background-color 0.3s ease, color 0.3s ease',
-              }}
-            >
-              {altaltkategori}
-            </button>
-          ))}
         </div>
       )}
       {/* Filtered Cards */}
