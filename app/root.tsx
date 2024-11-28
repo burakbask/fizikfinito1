@@ -70,7 +70,7 @@ export default function Root() {
               </button>
               <ul id="mobile-menu" className="transform transition-transform duration-500 ease-in-out -translate-x-full fixed inset-0 bg-white p-8 z-50 space-y-4 text-lg font-medium md:hidden">
                 <li>
-                  <Link to="/card" className="text-gray-700 hover:text-blue-600 transition duration-300 ease-in-out" onClick={() => {
+                  <Link to="/" className="text-gray-700 hover:text-blue-600 transition duration-300 ease-in-out" onClick={() => {
                     document.getElementById('mobile-menu').classList.add('-translate-x-full');
                     document.getElementById('menu-overlay').classList.add('hidden');
                   }}>
@@ -108,7 +108,7 @@ export default function Root() {
               </ul>
               <ul className="hidden md:flex space-x-8 text-lg font-medium">
                 <li>
-                  <Link to="/card" className="text-gray-700 hover:text-blue-600 transition duration-300 ease-in-out">
+                  <Link to="/" className="text-gray-700 hover:text-blue-600 transition duration-300 ease-in-out">
                     Ana Sayfa
                   </Link>
                 </li>
@@ -118,8 +118,8 @@ export default function Root() {
                   </Link>
                 </li>
                 <li>
-                  <Link to="/dersplanlamam" className="text-gray-700 hover:text-blue-600 transition duration-300 ease-in-out">
-                    Ders Planlamam
+                  <Link to="/kitaplarimiz" className="text-gray-700 hover:text-blue-600 transition duration-300 ease-in-out">
+                    Tüm Kitaplarımız
                   </Link>
                 </li>
               </ul>

@@ -42,15 +42,15 @@ export const loader = async ({ params, request }: { params: { category?: string;
 
 // Utility function to convert Turkish characters to English equivalents
 const normalizeString = (str: string) => {
-  return str
+  return String(str) // Ensure the input is a string
     .normalize('NFD')
     .replace(/[̀-ͯ]/g, '')
-    .replace(/ı/g, 'i')
-    .replace(/ç/g, 'c')
-    .replace(/ş/g, 's')
-    .replace(/ö/g, 'o')
-    .replace(/ü/g, 'u')
-    .replace(/ğ/g, 'g')
+    .replace(/[ı]/g, 'i')
+    .replace(/[ç]/g, 'c')
+    .replace(/[ş]/g, 's')
+    .replace(/[ö]/g, 'o')
+    .replace(/[ü]/g, 'u')
+    .replace(/[ğ]/g, 'g')
     .replace(/\s+/g, '-'); // Replace spaces with hyphens for SEO
 };
 
@@ -471,7 +471,7 @@ export default function Index() {
             {filteredCards.map((card) => (
               <Link
                 key={card.id}
-                to={`/icerik/${card.slug}`}
+                to={`/${card.slug}`}
                 style={{ textDecoration: 'none', color: 'inherit', width: '100%', display: 'flex', justifyContent: 'center', maxWidth: '1200px' }}
               >
                 <div

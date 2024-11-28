@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLoaderData } from '@remix-run/react';
-import { json } from '@remix-run/node';
+import { Link, useLoaderData, useNavigate } from '@remix-run/react';
+import { json, redirect } from '@remix-run/node';
 import { getCollectionItems } from '~/utils/directusClient';
 import ShopifyScriptComponent from './book';
+import ShopifyScriptComponentMobile from './book_mobile';
+import ProductComponentWrapperMobile from './ProductComponentWrapper_mobile';
+import ProductComponentWrapper from './ProductComponentWrapper';
 import { useMediaQuery } from 'react-responsive';
 
 type CardData = {
@@ -15,38 +18,55 @@ type CardData = {
   kimlerIcin: string;
   suresi: string;
   seviye: number;
-  kampKitabi: string;
+  kampKitabı: string;
   kursAciklamasi: string;
   image?: string;
   videoUrl?: string;
   shopifyProductId?: string;
 };
 
-export const loader = async () => {
+export const loader = async ({ params, request }: { params: { category?: string; subcategory?: string; subsubcategory?: string }, request: Request }) => {
   const cardsData: CardData[] = await getCollectionItems('cards');
   const categoriesData = await getCollectionItems('Kategoriler');
-  return json({ cardsData, categoriesData });
+  const { category, subcategory, subsubcategory } = params;
+  const url = new URL(request.url);
+  const { pathname } = url;
+
+  // Redirect to the homepage if the URL does not match any category or subcategory
+  if (category && !categoriesData.some((cat) => normalizeString(cat) === category)) {
+    return redirect('/');
+  }
+
+  return json({ cardsData, categoriesData, initialCategory: category || 'YKS Hazırlık', initialSubcategory: subcategory || '', initialSubsubcategory: subsubcategory || '', pathname });
 };
 
 // Utility function to convert Turkish characters to English equivalents
 const normalizeString = (str: string) => {
-  return str
+  return String(str) // Ensure the input is a string
     .normalize('NFD')
     .replace(/[̀-ͯ]/g, '')
-    .replace(/ı/g, 'i')
-    .replace(/ç/g, 'c')
-    .replace(/ş/g, 's')
-    .replace(/ö/g, 'o')
-    .replace(/ü/g, 'u')
-    .replace(/ğ/g, 'g')
+    .replace(/[ı]/g, 'i')
+    .replace(/[ç]/g, 'c')
+    .replace(/[ş]/g, 's')
+    .replace(/[ö]/g, 'o')
+    .replace(/[ü]/g, 'u')
+    .replace(/[ğ]/g, 'g')
     .replace(/\s+/g, '-'); // Replace spaces with hyphens for SEO
 };
 
 export default function Index() {
-  const { cardsData, categoriesData } = useLoaderData<typeof loader>();
-  const [filteredCategory, setFilteredCategory] = useState<string>('YKS Hazırlık');
-  const [filteredSubcategory, setFilteredSubcategory] = useState<string>('');
-  const [filteredSubsubcategory, setFilteredSubsubcategory] = useState<string>('');
+  const navigate = useNavigate();
+  const { cardsData, categoriesData, initialCategory, initialSubcategory, initialSubsubcategory, pathname } = useLoaderData<typeof loader>();
+
+  useEffect(() => {
+    if (pathname) {
+      window.history.replaceState(null, '', pathname);
+    }
+  }, [pathname]);
+
+  const [filteredCategory, setFilteredCategory] = useState<string>(initialCategory);
+  const [filteredSubcategory, setFilteredSubcategory] = useState<string>(initialSubcategory);
+  const [filteredSubsubcategory, setFilteredSubsubcategory] = useState<string>(initialSubsubcategory);
   const [filteredCards, setFilteredCards] = useState<CardData[]>([]);
   const [selectedVideoCard, setSelectedVideoCard] = useState<{ [key: string]: CardData | null }>({});
   const [selectedBookCard, setSelectedBookCard] = useState<{ [key: string]: CardData | null }>({});
@@ -203,6 +223,76 @@ export default function Index() {
           </button>
         ))}
       </div>
+      {/* Subcategories Filter Buttons */}
+      {filteredCategory !== 'YKS Hazırlık' && subcategories.length > 0 && (
+        <div
+          style={{
+            marginTop: '20px',
+            display: 'flex',
+            gap: isMobile ? '10px' : '20px',
+            flexWrap: 'wrap',
+            justifyContent: 'center',
+            background: 'linear-gradient(135deg, #f9f9f9, #ffffff)',
+            padding: isMobile ? '10px' : '20px',
+            borderRadius: '25px',
+            boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.15)',
+          }}
+        >
+          {subcategories.map((altkategori) => (
+            <button
+              key={altkategori}
+              onClick={() => handleSubcategoryFilter(altkategori)}
+              style={{
+                padding: isMobile ? '5px 10px' : '10px 20px',
+                cursor: 'pointer',
+                borderRadius: '25px',
+                border: 'none',
+                backgroundColor: filteredSubcategory === altkategori ? '#28a745' : '#fff',
+                color: filteredSubcategory === altkategori ? '#fff' : '#28a745',
+                boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
+                transition: 'background-color 0.3s ease, color 0.3s ease',
+              }}
+            >
+              {altkategori}
+            </button>
+          ))}
+        </div>
+      )}
+      {/* Subsubcategories Filter Buttons */}
+      {filteredSubcategory !== '' && subsubcategories.length > 0 && (
+        <div
+          style={{
+            marginTop: '20px',
+            display: 'flex',
+            gap: isMobile ? '10px' : '20px',
+            flexWrap: 'wrap',
+            justifyContent: 'center',
+            background: 'linear-gradient(135deg, #f9f9f9, #ffffff)',
+            padding: isMobile ? '10px' : '20px',
+            borderRadius: '25px',
+            boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.15)',
+          }}
+        >
+          {subsubcategories.map((altaltkategori) => (
+            <button
+              key={altaltkategori}
+              onClick={() => handleSubsubcategoryFilter(altaltkategori)}
+              style={{
+                padding: isMobile ? '5px 10px' : '10px 20px',
+                cursor: 'pointer',
+                borderRadius: '25px',
+                border: 'none',
+                backgroundColor: filteredSubsubcategory === altaltkategori ? '#ff6347' : '#fff',
+                color: filteredSubsubcategory === altaltkategori ? '#fff' : '#ff6347',
+                boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
+                transition: 'background-color 0.3s ease, color 0.3s ease',
+              }}
+            >
+              {altaltkategori}
+            </button>
+          ))}
+        </div>
+      )}
       {/* Video and Book Components */}
       {filteredCategory === 'YKS Hazırlık' && filteredSubcategory === '' && (
         <div
@@ -273,7 +363,11 @@ export default function Index() {
                 width: '100%',
               }}
             >
-              <ShopifyScriptComponent productId="9849553518897" />
+              {isMobile ? (
+                <ShopifyScriptComponentMobile productId="9849553518897" />
+              ) : (
+                <ShopifyScriptComponent productId="9849553518897" />
+              )}
             </div>
           </div>
         </div>
@@ -351,80 +445,14 @@ export default function Index() {
                   width: '100%',
                 }}
               >
-                <ShopifyScriptComponent productId={selectedBookCard[filteredCategory]?.shopifyProductId} />
+                {isMobile ? (
+                  <ShopifyScriptComponentMobile productId={selectedBookCard[filteredCategory]?.shopifyProductId} />
+                ) : (
+                  <ShopifyScriptComponent productId={selectedBookCard[filteredCategory]?.shopifyProductId} />
+                )}
               </div>
             </div>
           )}
-        </div>
-      )}
-      {/* Subcategories Filter Buttons */}
-      {subcategories.length > 0 && (
-        <div
-          style={{
-            marginTop: '20px',
-            display: 'flex',
-            gap: isMobile ? '10px' : '20px',
-            flexWrap: 'wrap',
-            justifyContent: 'center',
-            background: 'linear-gradient(135deg, #f9f9f9, #ffffff)',
-            padding: isMobile ? '10px' : '20px',
-            borderRadius: '25px',
-            boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.15)',
-          }}
-        >
-          {subcategories.map((altkategori) => (
-            <button
-              key={altkategori}
-              onClick={() => handleSubcategoryFilter(altkategori)}
-              style={{
-                padding: isMobile ? '5px 10px' : '10px 20px',
-                cursor: 'pointer',
-                borderRadius: '25px',
-                border: 'none',
-                backgroundColor: filteredSubcategory === altkategori ? '#28a745' : '#fff',
-                color: filteredSubcategory === altkategori ? '#fff' : '#28a745',
-                boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
-                transition: 'background-color 0.3s ease, color 0.3s ease',
-              }}
-            >
-              {altkategori}
-            </button>
-          ))}
-        </div>
-      )}
-      {/* Subsubcategories Filter Buttons */}
-      {subsubcategories.length > 0 && (
-        <div
-          style={{
-            marginTop: '20px',
-            display: 'flex',
-            gap: isMobile ? '10px' : '20px',
-            flexWrap: 'wrap',
-            justifyContent: 'center',
-            background: 'linear-gradient(135deg, #f9f9f9, #ffffff)',
-            padding: isMobile ? '10px' : '20px',
-            borderRadius: '25px',
-            boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.15)',
-          }}
-        >
-          {subsubcategories.map((altaltkategori) => (
-            <button
-              key={altaltkategori}
-              onClick={() => handleSubsubcategoryFilter(altaltkategori)}
-              style={{
-                padding: isMobile ? '5px 10px' : '10px 20px',
-                cursor: 'pointer',
-                borderRadius: '25px',
-                border: 'none',
-                backgroundColor: filteredSubsubcategory === altaltkategori ? '#ff6347' : '#fff',
-                color: filteredSubsubcategory === altaltkategori ? '#fff' : '#ff6347',
-                boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
-                transition: 'background-color 0.3s ease, color 0.3s ease',
-              }}
-            >
-              {altaltkategori}
-            </button>
-          ))}
         </div>
       )}
       {/* Filtered Cards */}
@@ -443,7 +471,7 @@ export default function Index() {
             {filteredCards.map((card) => (
               <Link
                 key={card.id}
-                to={`/card/${card.slug}`}
+                to={`/${card.slug}`}
                 style={{ textDecoration: 'none', color: 'inherit', width: '100%', display: 'flex', justifyContent: 'center', maxWidth: '1200px' }}
               >
                 <div
@@ -513,7 +541,7 @@ export default function Index() {
                     <p style={{ color: '#555', marginBottom: '5px' }}><strong>Kimler İçin:</strong> {card.kimlerIcin}</p>
                     <p style={{ color: '#555', marginBottom: '5px' }}><strong>Süresi Ne Kadar:</strong> {card.suresi}</p>
                     <p style={{ color: '#555', marginBottom: '5px' }}><strong>Seviye:</strong> {card.seviye}</p>
-                    <p style={{ color: '#555', marginBottom: '5px' }}><strong>Kamp Kitabı:</strong> {card.kampKitabi}</p>
+                    <p style={{ color: '#555', marginBottom: '5px' }}><strong>Kamp Kitabı:</strong> {card.kampKitabı}</p>
                     <hr style={{
                       border: 'none',
                       height: '2px',
