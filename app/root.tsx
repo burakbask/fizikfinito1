@@ -86,11 +86,11 @@ export default function Root() {
                   </Link>
                 </li>
                 <li>
-                  <Link to="/dersplanlamam" className="text-gray-700 hover:text-blue-600 transition duration-300 ease-in-out" onClick={() => {
+                  <Link to="/kitaplarimiz" className="text-gray-700 hover:text-blue-600 transition duration-300 ease-in-out" onClick={() => {
                     document.getElementById('mobile-menu').classList.add('-translate-x-full');
                     document.getElementById('menu-overlay').classList.add('hidden');
                   }}>
-                    Ders Planlamam
+                    Tüm Kitaplarımız
                   </Link>
                 </li>
                 <li>
