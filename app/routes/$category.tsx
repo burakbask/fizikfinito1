@@ -2,10 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLoaderData, useNavigate } from '@remix-run/react';
 import { json, redirect } from '@remix-run/node';
 import { getCollectionItems } from '~/utils/directusClient';
-import ShopifyScriptComponent from './book';
-import ShopifyScriptComponentMobile from './book_mobile';
-import ProductComponentWrapperMobile from './ProductComponentWrapper_mobile';
-import ProductComponentWrapper from './ProductComponentWrapper';
 import { useMediaQuery } from 'react-responsive';
 
 type CardData = {
@@ -22,7 +18,6 @@ type CardData = {
   kursAciklamasi: string;
   image?: string;
   videoUrl?: string;
-  shopifyProductId?: string;
 };
 
 export const loader = async ({ params, request }: { params: { category?: string; subcategory?: string; subsubcategory?: string }, request: Request }) => {
@@ -44,14 +39,24 @@ export const loader = async ({ params, request }: { params: { category?: string;
 const normalizeString = (str: string) => {
   return String(str) // Ensure the input is a string
     .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .replace(/[ı]/g, 'i')
-    .replace(/[ç]/g, 'c')
-    .replace(/[ş]/g, 's')
-    .replace(/[ö]/g, 'o')
-    .replace(/[ü]/g, 'u')
-    .replace(/[ğ]/g, 'g')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[\u0131]/g, 'i')
+    .replace(/[\u00e7]/g, 'c')
+    .replace(/[\u015f]/g, 's')
+    .replace(/[\u00f6]/g, 'o')
+    .replace(/[\u00fc]/g, 'u')
+    .replace(/[\u011f]/g, 'g')
     .replace(/\s+/g, '-'); // Replace spaces with hyphens for SEO
+};
+
+const staticVideos: { [key: string]: string } = {
+  'YKS Hazırlık/Neler Var': 'https://www.youtube.com/embed/V_UluhnJ7U4?list=PLwyfvkhKMmwowVyIegsf3QQw3OsYfEkPR',
+  'TYT/Neler Var': 'https://www.youtube.com/embed/V_UluhnJ7U4?list=PLwyfvkhKMmwowVyIegsf3QQw3OsYfEkPR',
+  'AYT/Neler Var': 'https://www.youtube.com/embed/V_UluhnJ7U4?list=PLwyfvkhKMmwowVyIegsf3QQw3OsYfEkPR',
+  '9. Sınıf/Neler Var': 'https://www.youtube.com/embed/V_UluhnJ7U4?list=PLwyfvkhKMmwowVyIegsf3QQw3OsYfEkPR',
+  '10. Sınıf/Neler Var': 'https://www.youtube.com/embed/V_UluhnJ7U4?list=PLwyfvkhKMmwowVyIegsf3QQw3OsYfEkPR',
+  '11. Sınıf/Neler Var': 'https://www.youtube.com/embed/V_UluhnJ7U4?list=PLwyfvkhKMmwowVyIegsf3QQw3OsYfEkPR',
+  '12. Sınıf/Neler Var': 'https://www.youtube.com/embed/V_UluhnJ7U4?list=PLwyfvkhKMmwowVyIegsf3QQw3OsYfEkPR',
 };
 
 export default function Index() {
@@ -68,10 +73,6 @@ export default function Index() {
   const [filteredSubcategory, setFilteredSubcategory] = useState<string>(initialSubcategory);
   const [filteredSubsubcategory, setFilteredSubsubcategory] = useState<string>(initialSubsubcategory);
   const [filteredCards, setFilteredCards] = useState<CardData[]>([]);
-  const [selectedVideoCard, setSelectedVideoCard] = useState<{ [key: string]: CardData | null }>({});
-  const [selectedBookCard, setSelectedBookCard] = useState<{ [key: string]: CardData | null }>({});
-  const [previousSelectedVideoCard, setPreviousSelectedVideoCard] = useState<{ [key: string]: CardData | null }>({});
-  const [previousSelectedBookCard, setPreviousSelectedBookCard] = useState<{ [key: string]: CardData | null }>({});
 
   const isMobile = useMediaQuery({ query: '(max-width: 768px)' });
 
@@ -80,11 +81,13 @@ export default function Index() {
   const subcategories =
     filteredCategory !== 'YKS Hazırlık'
       ? Array.from(
-          new Set(
-            cardsData
+          new Set([
+            'Neler Var',
+            ...cardsData
               .filter((card) => card.kategori === filteredCategory)
               .map((card) => card.altkategori)
-          )
+              .filter((altkategori) => altkategori)
+          ])
         )
       : [];
 
@@ -109,10 +112,6 @@ export default function Index() {
     setFilteredSubsubcategory('');
     const normalizedKategori = normalizeString(kategori);
     window.history.pushState(null, '', `/${normalizedKategori}`);
-
-    // Show the video and book components again if the main category is selected
-    setSelectedVideoCard(previousSelectedVideoCard);
-    setSelectedBookCard(previousSelectedBookCard);
   };
 
   const handleSubcategoryFilter = (altkategori: string) => {
@@ -121,8 +120,6 @@ export default function Index() {
     const normalizedKategori = normalizeString(filteredCategory);
     const normalizedAltkategori = normalizeString(altkategori);
     window.history.pushState(null, '', `/${normalizedKategori}/${normalizedAltkategori}`);
-    setSelectedVideoCard({});
-    setSelectedBookCard({});
   };
 
   const handleSubsubcategoryFilter = (altaltkategori: string) => {
@@ -157,23 +154,8 @@ export default function Index() {
     setFilteredCards(updatedFilteredCards);
   }, [filteredCategory, filteredSubcategory, filteredSubsubcategory, cardsData]);
 
-  useEffect(() => {
-    const videoCards: { [key: string]: CardData | null } = {};
-    const bookCards: { [key: string]: CardData | null } = {};
-
-    categories.forEach((kategori) => {
-      const filteredCategoryCards = cardsData.filter((card) => card.kategori === kategori);
-      videoCards[kategori] = filteredCategoryCards.find((card) => card.videoUrl) || null;
-      bookCards[kategori] = filteredCategoryCards.find((card) => card.shopifyProductId) || null;
-    });
-
-    setSelectedVideoCard(videoCards);
-    setSelectedBookCard(bookCards);
-
-    // Save the selected video and book cards to restore later if needed
-    setPreviousSelectedVideoCard(videoCards);
-    setPreviousSelectedBookCard(bookCards);
-  }, [cardsData]);
+  const staticVideoKey = `${filteredCategory}/${filteredSubcategory}`;
+  const staticVideoUrl = staticVideos[staticVideoKey];
 
   return (
     <div
@@ -195,11 +177,11 @@ export default function Index() {
         style={{
           marginTop: '20px',
           display: 'flex',
-          gap: isMobile ? '10px' : '20px',
+          gap: isMobile ? '5px' : '10px',
           flexWrap: 'wrap',
           justifyContent: 'center',
           background: 'linear-gradient(135deg, #ece9e6, #ffffff)',
-          padding: isMobile ? '10px' : '20px',
+          padding: isMobile ? '5px' : '10px',
           borderRadius: '25px',
           boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.2)',
         }}
@@ -217,6 +199,7 @@ export default function Index() {
               color: filteredCategory === kategori ? '#fff' : '#6c63ff',
               boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
               transition: 'background-color 0.3s ease, color 0.3s ease',
+              flex: isMobile ? '1 1 calc(50% - 10px)' : 'initial',
             }}
           >
             {kategori}
@@ -229,11 +212,11 @@ export default function Index() {
           style={{
             marginTop: '20px',
             display: 'flex',
-            gap: isMobile ? '10px' : '20px',
+            gap: isMobile ? '5px' : '10px',
             flexWrap: 'wrap',
             justifyContent: 'center',
             background: 'linear-gradient(135deg, #f9f9f9, #ffffff)',
-            padding: isMobile ? '10px' : '20px',
+            padding: isMobile ? '5px' : '10px',
             borderRadius: '25px',
             boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.15)',
           }}
@@ -251,6 +234,7 @@ export default function Index() {
                 color: filteredSubcategory === altkategori ? '#fff' : '#28a745',
                 boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
                 transition: 'background-color 0.3s ease, color 0.3s ease',
+                flex: isMobile ? '1 1 calc(50% - 10px)' : 'initial',
               }}
             >
               {altkategori}
@@ -264,11 +248,11 @@ export default function Index() {
           style={{
             marginTop: '20px',
             display: 'flex',
-            gap: isMobile ? '10px' : '20px',
+            gap: isMobile ? '5px' : '10px',
             flexWrap: 'wrap',
             justifyContent: 'center',
             background: 'linear-gradient(135deg, #f9f9f9, #ffffff)',
-            padding: isMobile ? '10px' : '20px',
+            padding: isMobile ? '5px' : '10px',
             borderRadius: '25px',
             boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.15)',
           }}
@@ -286,6 +270,7 @@ export default function Index() {
                 color: filteredSubsubcategory === altaltkategori ? '#fff' : '#ff6347',
                 boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
                 transition: 'background-color 0.3s ease, color 0.3s ease',
+                flex: isMobile ? '1 1 calc(50% - 10px)' : 'initial',
               }}
             >
               {altaltkategori}
@@ -293,166 +278,35 @@ export default function Index() {
           ))}
         </div>
       )}
-      {/* Video and Book Components */}
-      {filteredCategory === 'YKS Hazırlık' && filteredSubcategory === '' && (
+      {/* Static Video for Subcategories */}
+      {staticVideoUrl && (
         <div
           style={{
             marginTop: '20px',
             display: 'flex',
-            gap: isMobile ? '10px' : '15px',
             justifyContent: 'center',
-            alignItems: 'flex-start',
+            alignItems: 'center',
             width: '100%',
+            maxWidth: '800px',
             backgroundColor: '#ffffff',
             padding: '10px',
             borderRadius: '15px',
-            flexWrap: isMobile ? 'wrap' : 'nowrap',
-            flexDirection: isMobile ? 'column' : 'row',
+            boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.15)',
           }}
         >
-          <div
+          <iframe
+            width="100%"
+            height="400px"
+            src={staticVideoUrl}
+            title="Neler Var Playlist - İlk Video Görüntüleniyor"
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
             style={{
-              flex: 3,
-              backgroundColor: '#ffffff',
               borderRadius: '15px',
-              boxShadow: '15px 15px 15px rgba(0, 0, 0, 0.1)',
-              padding: '0',
-              textAlign: 'center',
-              width: '100%',
-              maxWidth: isMobile ? '100%' : '700px',
-              height: isMobile ? '200px' : 'auto',
-              aspectRatio: '16 / 9',
-              overflow: 'hidden',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              margin: '0 auto',
+              boxShadow: '0px 8px 30px rgba(0, 0, 0, 0.2)',
             }}
-          >
-            <iframe
-              width="100%"
-              height={isMobile ? '200px' : '400px'}
-              src="https://www.youtube.com/embed/Bg0YEuJgB3s"
-              title="YouTube video player"
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              style={{
-                borderRadius: '15px',
-                boxShadow: '0px 8px 30px rgba(0, 0, 0, 0.2)',
-                objectFit: 'cover',
-                marginBottom: '0',
-                paddingBottom: '0',
-              }}
-            ></iframe>
-          </div>
-          <div
-            style={{
-              flex: 1,
-              backgroundColor: '#ffffff',
-              borderRadius: '15px',
-              boxShadow: '0px 8px 15px rgba(0, 0, 0, 0.1)',
-              padding: '10px',
-              textAlign: 'center',
-              maxWidth: 'auto',
-            }}
-          >
-            <div
-              style={{
-                textAlign: 'center',
-                width: '100%',
-              }}
-            >
-              {isMobile ? (
-                <ShopifyScriptComponentMobile productId="9849553518897" />
-              ) : (
-                <ShopifyScriptComponent productId="9849553518897" />
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-      {filteredCategory !== 'YKS Hazırlık' && filteredSubcategory === '' && (
-        <div
-          style={{
-            marginTop: '20px',
-            display: 'flex',
-            gap: isMobile ? '10px' : '15px',
-            justifyContent: 'center',
-            alignItems: 'flex-start',
-            width: '100%',
-            backgroundColor: '#ffffff',
-            padding: '10px',
-            borderRadius: '15px',
-            flexWrap: isMobile ? 'wrap' : 'nowrap',
-            flexDirection: isMobile ? 'column' : 'row',
-          }}
-        >
-          {selectedVideoCard[filteredCategory] && selectedVideoCard[filteredCategory]?.videoUrl && (
-            <div
-              style={{
-                flex: 3,
-                backgroundColor: '#ffffff',
-                borderRadius: '15px',
-                boxShadow: '15px 15px 15px rgba(0, 0, 0, 0.1)',
-                padding: '0',
-                textAlign: 'center',
-                width: '100%',
-                maxWidth: isMobile ? '100%' : '700px',
-                height: isMobile ? '200px' : 'auto',
-                aspectRatio: '16 / 9',
-                overflow: 'hidden',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                margin: '0 auto',
-              }}
-            >
-              <iframe
-                width="100%"
-                height={isMobile ? '200px' : '400px'}
-                src={`https://www.youtube.com/embed/${selectedVideoCard[filteredCategory]?.videoUrl.split('v=')[1]?.split('&')[0]}`}
-                title="YouTube video player"
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                style={{
-                  borderRadius: '15px',
-                  boxShadow: '0px 8px 30px rgba(0, 0, 0, 0.2)',
-                  objectFit: 'cover',
-                  marginBottom: '0',
-                  paddingBottom: '0',
-                }}
-              ></iframe>
-            </div>
-          )}
-
-          {selectedBookCard[filteredCategory] && selectedBookCard[filteredCategory]?.shopifyProductId && (
-            <div
-              style={{
-                flex: 1,
-                backgroundColor: '#ffffff',
-                borderRadius: '15px',
-                boxShadow: '0px 8px 15px rgba(0, 0, 0, 0.1)',
-                padding: '10px',
-                textAlign: 'center',
-                maxWidth: 'auto',
-              }}
-            >
-              <div
-                style={{
-                  textAlign: 'center',
-                  width: '100%',
-                }}
-              >
-                {isMobile ? (
-                  <ShopifyScriptComponentMobile productId={selectedBookCard[filteredCategory]?.shopifyProductId} />
-                ) : (
-                  <ShopifyScriptComponent productId={selectedBookCard[filteredCategory]?.shopifyProductId} />
-                )}
-              </div>
-            </div>
-          )}
+          ></iframe>
         </div>
       )}
       {/* Filtered Cards */}
