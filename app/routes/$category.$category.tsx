@@ -41,8 +41,13 @@ export const loader = async ({ params, request }: { params: { category?: string;
 };
 
 // Utility function to convert Turkish characters to English equivalents
-const normalizeString = (str: string) => {
-  return String(str) // Ensure the input is a string
+// Utility function to convert Turkish characters to English equivalents
+const normalizeString = (str: any) => {
+  if (typeof str !== 'string') {
+    return '';
+  }
+
+  return str
     .normalize('NFD')
     .replace(/[̀-ͯ]/g, '')
     .replace(/[ı]/g, 'i')
@@ -52,6 +57,15 @@ const normalizeString = (str: string) => {
     .replace(/[ü]/g, 'u')
     .replace(/[ğ]/g, 'g')
     .replace(/\s+/g, '-'); // Replace spaces with hyphens for SEO
+};
+
+const categoryVideos: { [key: string]: string } = {
+  'TYT': 'https://www.youtube.com/embed/videoseries?list=PLwyfvkhKMmwowVyIegsf3QQw3OsYfEkPR',
+  'AYT': 'https://www.youtube.com/embed/videoseries?list=PLwyfvkhKMmwowVyIegsf3QQw3OsYfEkPR',
+  '9. Sınıf': 'https://www.youtube.com/embed/videoseries?list=PLwyfvkhKMmwowVyIegsf3QQw3OsYfEkPR',
+  '10. Sınıf': 'https://www.youtube.com/embed/videoseries?list=PLwyfvkhKMmwowVyIegsf3QQw3OsYfEkPR',
+  '11. Sınıf': 'https://www.youtube.com/embed/videoseries?list=PLwyfvkhKMmwowVyIegsf3QQw3OsYfEkPR',
+  '12. Sınıf': 'https://www.youtube.com/embed/videoseries?list=PLwyfvkhKMmwowVyIegsf3QQw3OsYfEkPR'
 };
 
 export default function Index() {
@@ -68,10 +82,6 @@ export default function Index() {
   const [filteredSubcategory, setFilteredSubcategory] = useState<string>(initialSubcategory);
   const [filteredSubsubcategory, setFilteredSubsubcategory] = useState<string>(initialSubsubcategory);
   const [filteredCards, setFilteredCards] = useState<CardData[]>([]);
-  const [selectedVideoCard, setSelectedVideoCard] = useState<{ [key: string]: CardData | null }>({});
-  const [selectedBookCard, setSelectedBookCard] = useState<{ [key: string]: CardData | null }>({});
-  const [previousSelectedVideoCard, setPreviousSelectedVideoCard] = useState<{ [key: string]: CardData | null }>({});
-  const [previousSelectedBookCard, setPreviousSelectedBookCard] = useState<{ [key: string]: CardData | null }>({});
 
   const isMobile = useMediaQuery({ query: '(max-width: 768px)' });
 
@@ -80,11 +90,12 @@ export default function Index() {
   const subcategories =
     filteredCategory !== 'YKS Hazırlık'
       ? Array.from(
-          new Set(
-            cardsData
+          new Set([
+            'neler var',
+            ...cardsData
               .filter((card) => card.kategori === filteredCategory)
               .map((card) => card.altkategori)
-          )
+          ])
         )
       : [];
 
@@ -109,10 +120,6 @@ export default function Index() {
     setFilteredSubsubcategory('');
     const normalizedKategori = normalizeString(kategori);
     window.history.pushState(null, '', `/${normalizedKategori}`);
-
-    // Show the video and book components again if the main category is selected
-    setSelectedVideoCard(previousSelectedVideoCard);
-    setSelectedBookCard(previousSelectedBookCard);
   };
 
   const handleSubcategoryFilter = (altkategori: string) => {
@@ -121,8 +128,6 @@ export default function Index() {
     const normalizedKategori = normalizeString(filteredCategory);
     const normalizedAltkategori = normalizeString(altkategori);
     window.history.pushState(null, '', `/${normalizedKategori}/${normalizedAltkategori}`);
-    setSelectedVideoCard({});
-    setSelectedBookCard({});
   };
 
   const handleSubsubcategoryFilter = (altaltkategori: string) => {
@@ -157,24 +162,6 @@ export default function Index() {
     setFilteredCards(updatedFilteredCards);
   }, [filteredCategory, filteredSubcategory, filteredSubsubcategory, cardsData]);
 
-  useEffect(() => {
-    const videoCards: { [key: string]: CardData | null } = {};
-    const bookCards: { [key: string]: CardData | null } = {};
-
-    categories.forEach((kategori) => {
-      const filteredCategoryCards = cardsData.filter((card) => card.kategori === kategori);
-      videoCards[kategori] = filteredCategoryCards.find((card) => card.videoUrl) || null;
-      bookCards[kategori] = filteredCategoryCards.find((card) => card.shopifyProductId) || null;
-    });
-
-    setSelectedVideoCard(videoCards);
-    setSelectedBookCard(bookCards);
-
-    // Save the selected video and book cards to restore later if needed
-    setPreviousSelectedVideoCard(videoCards);
-    setPreviousSelectedBookCard(bookCards);
-  }, [cardsData]);
-
   return (
     <div
       style={{
@@ -197,7 +184,7 @@ export default function Index() {
           display: 'flex',
           gap: isMobile ? '10px' : '20px',
           flexWrap: 'wrap',
-          justifyContent: 'center',
+          justifyContent: isMobile ? 'flex-start' : 'center',
           background: 'linear-gradient(135deg, #ece9e6, #ffffff)',
           padding: isMobile ? '10px' : '20px',
           borderRadius: '25px',
@@ -217,6 +204,9 @@ export default function Index() {
               color: filteredCategory === kategori ? '#fff' : '#6c63ff',
               boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
               transition: 'background-color 0.3s ease, color 0.3s ease',
+              flexBasis: isMobile ? '30%' : 'auto',
+              margin: isMobile ? '5px' : '0',
+              textAlign: 'center'
             }}
           >
             {kategori}
@@ -293,166 +283,35 @@ export default function Index() {
           ))}
         </div>
       )}
-      {/* Video and Book Components */}
-      {filteredCategory === 'YKS Hazırlık' && filteredSubcategory === '' && (
+      {/* Static Video for "neler var" Subcategory */}
+      {filteredSubcategory === 'neler var' && categoryVideos[filteredCategory] && (
         <div
           style={{
             marginTop: '20px',
             display: 'flex',
-            gap: isMobile ? '10px' : '15px',
             justifyContent: 'center',
-            alignItems: 'flex-start',
+            alignItems: 'center',
             width: '100%',
             backgroundColor: '#ffffff',
             padding: '10px',
             borderRadius: '15px',
-            flexWrap: isMobile ? 'wrap' : 'nowrap',
-            flexDirection: isMobile ? 'column' : 'row',
+            boxShadow: '0px 10px 20px rgba(0, 0, 0, 0.1)',
           }}
         >
-          <div
+          <iframe
+            width={isMobile ? '100%' : '700px'}
+            height={isMobile ? '200px' : '400px'}
+            src={categoryVideos[filteredCategory]}
+            title="YouTube video player"
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
             style={{
-              flex: 3,
-              backgroundColor: '#ffffff',
               borderRadius: '15px',
-              boxShadow: '15px 15px 15px rgba(0, 0, 0, 0.1)',
-              padding: '0',
-              textAlign: 'center',
-              width: '100%',
-              maxWidth: isMobile ? '100%' : '700px',
-              height: isMobile ? '200px' : 'auto',
-              aspectRatio: '16 / 9',
-              overflow: 'hidden',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              margin: '0 auto',
+              boxShadow: '0px 8px 30px rgba(0, 0, 0, 0.2)',
+              objectFit: 'cover',
             }}
-          >
-            <iframe
-              width="100%"
-              height={isMobile ? '200px' : '400px'}
-              src="https://www.youtube.com/embed/Bg0YEuJgB3s"
-              title="YouTube video player"
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              style={{
-                borderRadius: '15px',
-                boxShadow: '0px 8px 30px rgba(0, 0, 0, 0.2)',
-                objectFit: 'cover',
-                marginBottom: '0',
-                paddingBottom: '0',
-              }}
-            ></iframe>
-          </div>
-          <div
-            style={{
-              flex: 1,
-              backgroundColor: '#ffffff',
-              borderRadius: '15px',
-              boxShadow: '0px 8px 15px rgba(0, 0, 0, 0.1)',
-              padding: '10px',
-              textAlign: 'center',
-              maxWidth: 'auto',
-            }}
-          >
-            <div
-              style={{
-                textAlign: 'center',
-                width: '100%',
-              }}
-            >
-              {isMobile ? (
-                <ShopifyScriptComponentMobile productId="9849553518897" />
-              ) : (
-                <ShopifyScriptComponent productId="9849553518897" />
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-      {filteredCategory !== 'YKS Hazırlık' && filteredSubcategory === '' && (
-        <div
-          style={{
-            marginTop: '20px',
-            display: 'flex',
-            gap: isMobile ? '10px' : '15px',
-            justifyContent: 'center',
-            alignItems: 'flex-start',
-            width: '100%',
-            backgroundColor: '#ffffff',
-            padding: '10px',
-            borderRadius: '15px',
-            flexWrap: isMobile ? 'wrap' : 'nowrap',
-            flexDirection: isMobile ? 'column' : 'row',
-          }}
-        >
-          {selectedVideoCard[filteredCategory] && selectedVideoCard[filteredCategory]?.videoUrl && (
-            <div
-              style={{
-                flex: 3,
-                backgroundColor: '#ffffff',
-                borderRadius: '15px',
-                boxShadow: '15px 15px 15px rgba(0, 0, 0, 0.1)',
-                padding: '0',
-                textAlign: 'center',
-                width: '100%',
-                maxWidth: isMobile ? '100%' : '700px',
-                height: isMobile ? '200px' : 'auto',
-                aspectRatio: '16 / 9',
-                overflow: 'hidden',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                margin: '0 auto',
-              }}
-            >
-              <iframe
-                width="100%"
-                height={isMobile ? '200px' : '400px'}
-                src={`https://www.youtube.com/embed/${selectedVideoCard[filteredCategory]?.videoUrl.split('v=')[1]?.split('&')[0]}`}
-                title="YouTube video player"
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                style={{
-                  borderRadius: '15px',
-                  boxShadow: '0px 8px 30px rgba(0, 0, 0, 0.2)',
-                  objectFit: 'cover',
-                  marginBottom: '0',
-                  paddingBottom: '0',
-                }}
-              ></iframe>
-            </div>
-          )}
-
-          {selectedBookCard[filteredCategory] && selectedBookCard[filteredCategory]?.shopifyProductId && (
-            <div
-              style={{
-                flex: 1,
-                backgroundColor: '#ffffff',
-                borderRadius: '15px',
-                boxShadow: '0px 8px 15px rgba(0, 0, 0, 0.1)',
-                padding: '10px',
-                textAlign: 'center',
-                maxWidth: 'auto',
-              }}
-            >
-              <div
-                style={{
-                  textAlign: 'center',
-                  width: '100%',
-                }}
-              >
-                {isMobile ? (
-                  <ShopifyScriptComponentMobile productId={selectedBookCard[filteredCategory]?.shopifyProductId} />
-                ) : (
-                  <ShopifyScriptComponent productId={selectedBookCard[filteredCategory]?.shopifyProductId} />
-                )}
-              </div>
-            </div>
-          )}
+          ></iframe>
         </div>
       )}
       {/* Filtered Cards */}
@@ -471,7 +330,7 @@ export default function Index() {
             {filteredCards.map((card) => (
               <Link
                 key={card.id}
-                to={`/${card.slug}`}
+                to={`/icerik/${card.slug}`}
                 style={{ textDecoration: 'none', color: 'inherit', width: '100%', display: 'flex', justifyContent: 'center', maxWidth: '1200px' }}
               >
                 <div
@@ -502,7 +361,7 @@ export default function Index() {
                     <iframe
                       width={isMobile ? '100%' : '250px'}
                       height={isMobile ? '200px' : '200px'}
-                      src={`https://www.youtube.com/embed/${card.videoUrl.split('v=')[1]?.split('&')[0]}`}
+                      src={`https://www.youtube.com/embed/${card.videoUrl.split('v=')[1]?.split('&')[0] || ''}`}
                       title="YouTube video player"
                       frameBorder="0"
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
