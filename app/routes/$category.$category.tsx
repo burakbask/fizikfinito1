@@ -41,7 +41,6 @@ export const loader = async ({ params, request }: { params: { category?: string;
 };
 
 // Utility function to convert Turkish characters to English equivalents
-// Utility function to convert Turkish characters to English equivalents
 const normalizeString = (str: any) => {
   if (typeof str !== 'string') {
     return '';
@@ -49,13 +48,13 @@ const normalizeString = (str: any) => {
 
   return str
     .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
+    .replace(/[\u0300-\u036f]/g, '')
     .replace(/[ı]/g, 'i')
-    .replace(/[ç]/g, 'c')
-    .replace(/[ş]/g, 's')
-    .replace(/[ö]/g, 'o')
-    .replace(/[ü]/g, 'u')
-    .replace(/[ğ]/g, 'g')
+    .replace(/[\u00e7]/g, 'c')
+    .replace(/[\u015f]/g, 's')
+    .replace(/[\u00f6]/g, 'o')
+    .replace(/[\u00fc]/g, 'u')
+    .replace(/[\u011f]/g, 'g')
     .replace(/\s+/g, '-'); // Replace spaces with hyphens for SEO
 };
 
@@ -91,7 +90,7 @@ export default function Index() {
     filteredCategory !== 'YKS Hazırlık'
       ? Array.from(
           new Set([
-            'neler var',
+            'Neler Bulabilirsiniz?',
             ...cardsData
               .filter((card) => card.kategori === filteredCategory)
               .map((card) => card.altkategori)
@@ -120,6 +119,9 @@ export default function Index() {
     setFilteredSubsubcategory('');
     const normalizedKategori = normalizeString(kategori);
     window.history.pushState(null, '', `/${normalizedKategori}`);
+    localStorage.setItem('filteredCategory', kategori);
+    localStorage.removeItem('filteredSubcategory');
+    localStorage.removeItem('filteredSubsubcategory');
   };
 
   const handleSubcategoryFilter = (altkategori: string) => {
@@ -128,6 +130,8 @@ export default function Index() {
     const normalizedKategori = normalizeString(filteredCategory);
     const normalizedAltkategori = normalizeString(altkategori);
     window.history.pushState(null, '', `/${normalizedKategori}/${normalizedAltkategori}`);
+    localStorage.setItem('filteredSubcategory', altkategori);
+    localStorage.removeItem('filteredSubsubcategory');
   };
 
   const handleSubsubcategoryFilter = (altaltkategori: string) => {
@@ -136,7 +140,24 @@ export default function Index() {
     const normalizedAltkategori = normalizeString(filteredSubcategory);
     const normalizedAltaltkategori = normalizeString(altaltkategori);
     window.history.pushState(null, '', `/${normalizedKategori}/${normalizedAltkategori}/${normalizedAltaltkategori}`);
+    localStorage.setItem('filteredSubsubcategory', altaltkategori);
   };
+
+  useEffect(() => {
+    const savedCategory = localStorage.getItem('filteredCategory');
+    const savedSubcategory = localStorage.getItem('filteredSubcategory');
+    const savedSubsubcategory = localStorage.getItem('filteredSubsubcategory');
+
+    if (savedCategory) {
+      setFilteredCategory(savedCategory);
+    }
+    if (savedSubcategory) {
+      setFilteredSubcategory(savedSubcategory);
+    }
+    if (savedSubsubcategory) {
+      setFilteredSubsubcategory(savedSubsubcategory);
+    }
+  }, []);
 
   useEffect(() => {
     let updatedFilteredCards = cardsData;
@@ -181,17 +202,38 @@ export default function Index() {
       <div
         style={{
           marginTop: '20px',
-          display: 'flex',
+          display: isMobile ? 'grid' : 'flex',
+          gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'none',
           gap: isMobile ? '10px' : '20px',
           flexWrap: 'wrap',
-          justifyContent: isMobile ? 'flex-start' : 'center',
+          justifyContent: 'center',
           background: 'linear-gradient(135deg, #ece9e6, #ffffff)',
           padding: isMobile ? '10px' : '20px',
           borderRadius: '25px',
           boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.2)',
         }}
       >
-        {['YKS Hazırlık', ...categories].map((kategori) => (
+        {['YKS Hazırlık'].map((kategori, index) => (
+          <button
+            key={kategori}
+            onClick={() => handleFilter(kategori)}
+            style={{
+              gridColumn: isMobile && index === 0 ? 'span 2' : 'auto',
+              padding: isMobile ? '5px 90px' : '10px 20px',
+              cursor: 'pointer',
+              borderRadius: '25px',
+              border: 'none',
+              backgroundColor: filteredCategory === kategori ? '#6c63ff' : '#fff',
+              color: filteredCategory === kategori ? '#fff' : '#6c63ff',
+              boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
+              transition: 'background-color 0.3s ease, color 0.3s ease',
+              width: isMobile ? '100%' : 'auto'
+            }}
+          >
+            {kategori}
+          </button>
+        ))}
+        {categories.filter(kategori => kategori !== 'YKS Hazırlık').map((kategori) => (
           <button
             key={kategori}
             onClick={() => handleFilter(kategori)}
@@ -204,9 +246,7 @@ export default function Index() {
               color: filteredCategory === kategori ? '#fff' : '#6c63ff',
               boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
               transition: 'background-color 0.3s ease, color 0.3s ease',
-              flexBasis: isMobile ? '30%' : 'auto',
-              margin: isMobile ? '5px' : '0',
-              textAlign: 'center'
+              width: isMobile ? '100%' : 'auto'
             }}
           >
             {kategori}
@@ -218,7 +258,8 @@ export default function Index() {
         <div
           style={{
             marginTop: '20px',
-            display: 'flex',
+            display: isMobile ? 'grid' : 'flex',
+            gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'none',
             gap: isMobile ? '10px' : '20px',
             flexWrap: 'wrap',
             justifyContent: 'center',
@@ -241,6 +282,7 @@ export default function Index() {
                 color: filteredSubcategory === altkategori ? '#fff' : '#28a745',
                 boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
                 transition: 'background-color 0.3s ease, color 0.3s ease',
+                width: isMobile ? '100%' : 'auto'
               }}
             >
               {altkategori}
@@ -253,7 +295,8 @@ export default function Index() {
         <div
           style={{
             marginTop: '20px',
-            display: 'flex',
+            display: isMobile ? 'grid' : 'flex',
+            gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'none',
             gap: isMobile ? '10px' : '20px',
             flexWrap: 'wrap',
             justifyContent: 'center',
@@ -276,6 +319,7 @@ export default function Index() {
                 color: filteredSubsubcategory === altaltkategori ? '#fff' : '#ff6347',
                 boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
                 transition: 'background-color 0.3s ease, color 0.3s ease',
+                width: isMobile ? '100%' : 'auto'
               }}
             >
               {altaltkategori}
@@ -284,7 +328,7 @@ export default function Index() {
         </div>
       )}
       {/* Static Video for "neler var" Subcategory */}
-      {filteredSubcategory === 'neler var' && categoryVideos[filteredCategory] && (
+      {filteredSubcategory === 'Neler Bulabilirsiniz?' && categoryVideos[filteredCategory] && (
         <div
           style={{
             marginTop: '20px',
