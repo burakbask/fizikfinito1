@@ -91,6 +91,12 @@ const Kitaplarimiz = () => {
                         'margin-right': '5px',
                         'margin-bottom': '30px',
                       },
+                      '@media (max-width: 600px)': {
+                        'max-width': '100%',
+                        'margin-left': '0',
+                        'margin-right': '0',
+                        'margin-bottom': '20px',
+                      },
                     },
                     button: {
                       'font-size': '16px', 'padding-top': '10px', 'padding-bottom': '10px',
@@ -182,7 +188,7 @@ const Kitaplarimiz = () => {
       <h1 style={{ fontSize: '32px', color: '#2c3e50', textAlign: 'center', marginBottom: '40px' }}>Tüm Kitaplarımız</h1>
       <div className="product-list" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', gap: '20px' }}>
         {products.map((product) => (
-          <div key={product.id} className="shopify-product" data-product-id={product.id} style={{ flex: '1 1 calc(33.33% - 20px)', boxSizing: 'border-box', textAlign: 'center', marginBottom: '30px', padding: '20px', backgroundColor: '#fff', borderRadius: '10px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)' }}>
+          <div key={product.id} className="shopify-product" data-product-id={product.id} style={{ flex: '1 1 100%', boxSizing: 'border-box', textAlign: 'center', marginBottom: '30px', padding: '20px', backgroundColor: '#fff', borderRadius: '10px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', '@media (min-width: 601px)': { flex: '1 1 calc(33.33% - 20px)' } }}>
             <a href={product.url} target="_blank" rel="noopener">
               <div style={{ marginBottom: '10px', fontWeight: 'bold', fontSize: '20px', color: '#2c3e50' }}>{product.title}</div>
             </a>

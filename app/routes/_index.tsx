@@ -17,7 +17,8 @@ type CardData = {
   kursBasligi: string;
   kimlerIcin: string;
   suresi: string;
-  seviye: number;
+  seviye: string;
+  guncelMi: string;
   kampKitabı: string;
   kursAciklamasi: string;
   image?: string;
@@ -48,13 +49,13 @@ const normalizeString = (str: any) => {
 
   return str
     .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .replace(/[ı]/g, 'i')
-    .replace(/[ç]/g, 'c')
-    .replace(/[ş]/g, 's')
-    .replace(/[ö]/g, 'o')
-    .replace(/[ü]/g, 'u')
-    .replace(/[ğ]/g, 'g')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[\u0131]/g, 'i')
+    .replace(/[\u00e7]/g, 'c')
+    .replace(/[\u015f]/g, 's')
+    .replace(/[\u00f6]/g, 'o')
+    .replace(/[\u00fc]/g, 'u')
+    .replace(/[\u011f]/g, 'g')
     .replace(/\s+/g, '-'); // Replace spaces with hyphens for SEO
 };
 
@@ -168,7 +169,11 @@ export default function Index() {
       );
     }
 
-    if (filteredSubcategory !== '') {
+    if (filteredSubcategory === 'Neler Bulabilirsiniz?') {
+      updatedFilteredCards = updatedFilteredCards.filter(
+        (card) => card.kategori === filteredCategory
+      );
+    } else if (filteredSubcategory !== '') {
       updatedFilteredCards = updatedFilteredCards.filter(
         (card) => card.altkategori === filteredSubcategory
       );
@@ -441,16 +446,17 @@ export default function Index() {
                     }}
                   >
                     <h3 style={{ color: '#007bff', marginBottom: '10px', whiteSpace: 'normal', overflow: 'visible', textOverflow: 'unset' }}>{card.kursBasligi}</h3>
-                    <p style={{ color: '#555', marginBottom: '5px' }}><strong>Kimler İçin:</strong> {card.kimlerIcin}</p>
-                    <p style={{ color: '#555', marginBottom: '5px' }}><strong>Süresi Ne Kadar:</strong> {card.suresi}</p>
-                    <p style={{ color: '#555', marginBottom: '5px' }}><strong>Seviye:</strong> {card.seviye}</p>
-                    <p style={{ color: '#555', marginBottom: '5px' }}><strong>Kamp Kitabı:</strong> {card.kampKitabı}</p>
+                    <p style={{ color: '#555', marginBottom: '1px' }}><strong>Kimler İçin:</strong> {card.kimlerIcin}</p>
+                    <p style={{ color: '#555', marginBottom: '1px' }}><strong>Süresi Ne Kadar?:</strong> {card.suresi}</p>
+                    <p style={{ color: '#555', marginBottom: '1px' }}><strong>Seviye:</strong> {card.seviye}</p>
+                    <p style={{ color: '#555', marginBottom: '1px' }}><strong>Güncel mi?:</strong> {card.guncelMi}</p>
+                    <p style={{ color: '#555', marginBottom: '1px' }}><strong>Kamp Kitabı:</strong> {card.kampKitabı}</p>
                     <hr style={{
                       border: 'none',
                       height: '2px',
                       background: 'linear-gradient(to right, #ff8c00, #ff0080, #8a2be2)',
                       width: '100%',
-                      margin: '10px 0',
+                      margin: '5px 0',
                     }} />
                     <p style={{ color: '#555', whiteSpace: 'normal', overflow: 'visible', textOverflow: 'unset' }}><strong>Kurs Açıklaması: </strong>{card.kursAciklamasi}</p>
                     <div

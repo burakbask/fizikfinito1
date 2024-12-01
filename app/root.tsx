@@ -38,6 +38,9 @@ export default function Root() {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="description" content="Fizikfinito - Fizik eğitim videoları, kitaplar ve daha fazlası ile fiziği eğlenceli hale getiriyoruz. Fizik derslerini keşfedin ve öğrenmenin keyfini çıkarın." />
+        <meta name="keywords" content="Fizikfinito, fizik, fizik eğitimi, fizik kitapları, TYT, AYT, lise fiziği, üniversite sınavı, bilim, fizik dersleri" />
+        <meta name="author" content="Fizikfinito" />
         <Meta />
         <Links />
       </head>
@@ -48,7 +51,7 @@ export default function Root() {
               <Link to="/" className="flex items-center">
                 <img
                   src="https://yt3.googleusercontent.com/g3EIUoVlq6BcGY7I7uC6oO0bYV92EK2_eXg1r5UTXhPgzIc8hK0ERX1NjOxnfKXOANUOpXbu=s160-c-k-c0x00ffffff-no-rj"
-                  alt="Logo"
+                  alt="Fizikfinito Logo"
                   className="h-10 w-10 rounded-full"
                 />
                 <span className="text-gray-900 text-2xl font-bold ml-4">Fizikfinito</span>
@@ -135,7 +138,7 @@ export default function Root() {
                   >
                     <img
                       src="https://cdn-icons-png.flaticon.com/512/2504/2504914.png"
-                      alt="Google logo"
+                      alt="Google ile Giriş Yap"
                       className="h-4 w-4 mr-1"
                     />
                     Giriş Yap
@@ -157,17 +160,17 @@ export default function Root() {
               <ul className="space-y-4">
                 <li>
                   <a href="https://instagram.com/fizikfinito" target="_blank" rel="noopener noreferrer" className="transition duration-300 ease-in-out">
-                    <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="Instagram" className="h-8 w-8" />
+                    <img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="Instagram Fizikfinito" className="h-8 w-8" />
                   </a>
                 </li>
                 <li>
                   <a href="https://twitter.com/fizikfinito" target="_blank" rel="noopener noreferrer" className="transition duration-300 ease-in-out">
-                    <img src="https://cdn-icons-png.flaticon.com/512/5968/5968830.png" alt="Twitter" className="h-8 w-8" />
+                    <img src="https://cdn-icons-png.flaticon.com/512/5968/5968830.png" alt="Twitter Fizikfinito" className="h-8 w-8" />
                   </a>
                 </li>
                 <li>
                   <a href="https://tiktok.com/@fizikfinito" target="_blank" rel="noopener noreferrer" className="transition duration-300 ease-in-out">
-                    <img src="https://cdn-icons-png.flaticon.com/512/2504/2504942.png" alt="TikTok" className="h-8 w-8" />
+                    <img src="https://cdn-icons-png.flaticon.com/512/2504/2504942.png" alt="TikTok Fizikfinito" className="h-8 w-8" />
                   </a>
                 </li>
               </ul>
@@ -178,7 +181,7 @@ export default function Root() {
           </main>
         </div>
         <footer className="bg-gray-900 text-white p-6 text-center mt-auto w-full">
-          <p>&copy; 2024 Fizikfinito - Tüm Hakları Saklıdır</p>
+          <p>&copy; 2024 Fizikfinito - Tüm Hakları Saklıdır. Görüş ve tavsiyeleriniz için: burakcanbaskin2@gmail.com</p>
         </footer>
         <ScrollRestoration />
         <Scripts />

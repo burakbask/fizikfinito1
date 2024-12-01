@@ -52,12 +52,14 @@ export default function Profile() {
         </Link>
 
         {/* Ödev Planlamam */}
-        <Link to="/homework-planning" className="block">
+        
+         <Link to="/homework-planning" className="block">
           <div className="bg-gradient-to-r from-purple-400 to-pink-500 text-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
             <h3 className="text-lg font-bold">Ödev Planlamam</h3>
             <p className="text-sm mt-2">Ödevlerinizi planlamak ve düzenlemek için burayı kullanın.</p>
           </div>
         </Link>
+       
       </div>
 
       <div className="text-center mt-8">
