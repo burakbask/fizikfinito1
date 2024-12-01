@@ -205,12 +205,12 @@ export default function Index() {
       {/* Filter Buttons */}
       <div
         style={{
-          marginTop: '20px',
+          marginTop: '10px',
           display: 'flex',
           flexWrap: 'wrap',
           justifyContent: 'center',
           background: 'linear-gradient(135deg, #ece9e6, #ffffff)',
-          padding: '20px',
+          padding: '10px',
           borderRadius: '25px',
           boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.2)',
         }}
@@ -240,14 +240,14 @@ export default function Index() {
       {filteredCategory !== '' && subcategories.length > 0 && (
         <div
           style={{
-            marginTop: isMobile ? '10px' : '20px',
+            marginTop: isMobile ? '10px' : '10px',
             display: isMobile ? 'grid' : 'flex',
             gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'none',
             gap: isMobile ? '10px' : '10px', // Adjusted gap to reduce extra space
             flexWrap: 'wrap',
             justifyContent: 'center',
             background: 'linear-gradient(135deg, #f9f9f9, #ffffff)',
-            padding: isMobile ? '10px' : '20px',
+            padding: isMobile ? '10px' : '10px',
             borderRadius: '25px',
             boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.15)',
           }}
@@ -278,14 +278,14 @@ export default function Index() {
       {filteredSubcategory !== '' && subsubcategories.length > 0 && (
         <div
           style={{
-            marginTop: isMobile ? '10px' : '20px',
+            marginTop: isMobile ? '10px' : '10px',
             display: isMobile ? 'grid' : 'flex',
             gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'none',
             gap: isMobile ? '10px' : '10px', // Adjusted gap to reduce extra space
             flexWrap: 'wrap',
             justifyContent: 'center',
             background: 'linear-gradient(135deg, #f9f9f9, #ffffff)',
-            padding: isMobile ? '10px' : '20px',
+            padding: isMobile ? '10px' : '10px',
             borderRadius: '25px',
             boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.15)',
           }}
