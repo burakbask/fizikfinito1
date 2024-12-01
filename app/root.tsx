@@ -155,7 +155,7 @@ export default function Root() {
           }}></div>
         </header>
         <div className="flex flex-1 relative">
-          <aside className="md:fixed right-0 top-1/2 transform -translate-y-1/2 bg-transparent p-6 hidden md:block">
+          <aside className="md:fixed left-0 top-1/2 transform -translate-y-1/2 bg-transparent p-6 hidden md:block">
             <div className="flex flex-col items-center">
               <ul className="space-y-4">
                 <li>
