@@ -2,12 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLoaderData, useNavigate } from '@remix-run/react';
 import { json, redirect } from '@remix-run/node';
 import { getCollectionItems } from '~/utils/directusClient';
-import ShopifyScriptComponent from './book';
-import ShopifyScriptComponentMobile from './book_mobile';
-import ProductComponentWrapperMobile from './ProductComponentWrapper_mobile';
-import ProductComponentWrapper from './ProductComponentWrapper';
 import { useMediaQuery } from 'react-responsive';
 
+// Type definition for CardData
 type CardData = {
   id: string;
   slug: string;
@@ -26,6 +23,7 @@ type CardData = {
   shopifyProductId?: string;
 };
 
+// Loader function for fetching data
 export const loader = async ({ params, request }: { params: { category?: string; subcategory?: string; subsubcategory?: string }, request: Request }) => {
   const cardsData: CardData[] = await getCollectionItems('cards');
   const categoriesData = await getCollectionItems('Kategoriler');
@@ -38,7 +36,7 @@ export const loader = async ({ params, request }: { params: { category?: string;
     return redirect('/');
   }
 
-  return json({ cardsData, categoriesData, initialCategory: category || 'YKS Hazırlık', initialSubcategory: subcategory || '', initialSubsubcategory: subsubcategory || '', pathname });
+  return json({ cardsData, categoriesData, initialCategory: category || '', initialSubcategory: subcategory || '', initialSubsubcategory: subsubcategory || '', pathname });
 };
 
 // Utility function to convert Turkish characters to English equivalents
@@ -59,6 +57,7 @@ const normalizeString = (str: any) => {
     .replace(/\s+/g, '-'); // Replace spaces with hyphens for SEO
 };
 
+// Category videos map
 const categoryVideos: { [key: string]: string } = {
   'TYT': 'https://www.youtube.com/embed/videoseries?list=PLwyfvkhKMmwowVyIegsf3QQw3OsYfEkPR',
   'AYT': 'https://www.youtube.com/embed/videoseries?list=PLwyfvkhKMmwowVyIegsf3QQw3OsYfEkPR',
@@ -70,7 +69,7 @@ const categoryVideos: { [key: string]: string } = {
 
 export default function Index() {
   const navigate = useNavigate();
-  const { cardsData, categoriesData, initialCategory, initialSubcategory, initialSubsubcategory, pathname } = useLoaderData<typeof loader>();
+  const { cardsData, categoriesData, initialCategory: initialCategoryFromLoader, initialSubcategory, initialSubsubcategory, pathname } = useLoaderData<typeof loader>();
 
   useEffect(() => {
     if (pathname) {
@@ -78,7 +77,7 @@ export default function Index() {
     }
   }, [pathname]);
 
-  const [filteredCategory, setFilteredCategory] = useState<string>(initialCategory);
+  const [filteredCategory, setFilteredCategory] = useState<string>(initialCategoryFromLoader);
   const [filteredSubcategory, setFilteredSubcategory] = useState<string>(initialSubcategory);
   const [filteredSubsubcategory, setFilteredSubsubcategory] = useState<string>(initialSubsubcategory);
   const [filteredCards, setFilteredCards] = useState<CardData[]>([]);
@@ -88,7 +87,7 @@ export default function Index() {
   const categories = Array.from(new Set(cardsData.map((card) => card.kategori)));
 
   const subcategories =
-    filteredCategory !== 'YKS Hazırlık'
+    filteredCategory !== ''
       ? Array.from(
           new Set([
             'Neler Bulabilirsiniz?',
@@ -120,9 +119,11 @@ export default function Index() {
     setFilteredSubsubcategory('');
     const normalizedKategori = normalizeString(kategori);
     window.history.pushState(null, '', `/${normalizedKategori}`);
-    localStorage.setItem('filteredCategory', kategori);
-    localStorage.removeItem('filteredSubcategory');
-    localStorage.removeItem('filteredSubsubcategory');
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('filteredCategory', kategori);
+    }
+    sessionStorage.removeItem('filteredSubcategory');
+    sessionStorage.removeItem('filteredSubsubcategory');
   };
 
   const handleSubcategoryFilter = (altkategori: string) => {
@@ -131,8 +132,8 @@ export default function Index() {
     const normalizedKategori = normalizeString(filteredCategory);
     const normalizedAltkategori = normalizeString(altkategori);
     window.history.pushState(null, '', `/${normalizedKategori}/${normalizedAltkategori}`);
-    localStorage.setItem('filteredSubcategory', altkategori);
-    localStorage.removeItem('filteredSubsubcategory');
+    sessionStorage.setItem('filteredSubcategory', altkategori);
+    sessionStorage.removeItem('filteredSubsubcategory');
   };
 
   const handleSubsubcategoryFilter = (altaltkategori: string) => {
@@ -141,29 +142,40 @@ export default function Index() {
     const normalizedAltkategori = normalizeString(filteredSubcategory);
     const normalizedAltaltkategori = normalizeString(altaltkategori);
     window.history.pushState(null, '', `/${normalizedKategori}/${normalizedAltkategori}/${normalizedAltaltkategori}`);
-    localStorage.setItem('filteredSubsubcategory', altaltkategori);
+    sessionStorage.setItem('filteredSubsubcategory', altaltkategori);
   };
 
   useEffect(() => {
-    const savedCategory = localStorage.getItem('filteredCategory');
-    const savedSubcategory = localStorage.getItem('filteredSubcategory');
-    const savedSubsubcategory = localStorage.getItem('filteredSubsubcategory');
+    if (typeof window !== 'undefined') {
+      const savedCategory = localStorage.getItem('filteredCategory');
+      const savedSubcategory = sessionStorage.getItem('filteredSubcategory');
+      const savedSubsubcategory = sessionStorage.getItem('filteredSubsubcategory');
+  
+      if (savedCategory) {
+        setFilteredCategory(savedCategory);
+      } else {
+        setFilteredCategory(initialCategoryFromLoader);
+      }
 
-    if (savedCategory) {
-      setFilteredCategory(savedCategory);
+      if (savedSubcategory && savedCategory) {
+        setFilteredSubcategory(savedSubcategory);
+      } else {
+        setFilteredSubcategory(initialSubcategory);
+      }
+
+      if (savedSubsubcategory && savedSubcategory && savedCategory) {
+        setFilteredSubsubcategory(savedSubsubcategory);
+      } else {
+        setFilteredSubsubcategory(initialSubsubcategory);
+      }
     }
-    if (savedSubcategory) {
-      setFilteredSubcategory(savedSubcategory);
-    }
-    if (savedSubsubcategory) {
-      setFilteredSubsubcategory(savedSubsubcategory);
-    }
-  }, []);
+}, []);
+
 
   useEffect(() => {
     let updatedFilteredCards = cardsData;
 
-    if (filteredCategory !== 'YKS Hazırlık') {
+    if (filteredCategory !== '') {
       updatedFilteredCards = updatedFilteredCards.filter(
         (card) => card.kategori === filteredCategory
       );
@@ -189,42 +201,26 @@ export default function Index() {
   }, [filteredCategory, filteredSubcategory, filteredSubsubcategory, cardsData]);
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        textAlign: 'center',
-        backgroundColor: '#f0f4f8',
-        minHeight: '100vh',
-        padding: isMobile ? '10px' : '20px',
-        width: '100%',
-        maxWidth: isMobile ? '100%' : '1000px',
-        margin: '0 auto',
-      }}
-    >
+    <div>
       {/* Filter Buttons */}
       <div
         style={{
-          marginTop: isMobile ? '10px' : '20px',
-          display: isMobile ? 'grid' : 'flex',
-          gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'none',
-          gap: isMobile ? '10px' : '20px',
+          marginTop: '20px',
+          display: 'flex',
           flexWrap: 'wrap',
           justifyContent: 'center',
           background: 'linear-gradient(135deg, #ece9e6, #ffffff)',
-          padding: isMobile ? '10px' : '20px',
+          padding: '20px',
           borderRadius: '25px',
           boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.2)',
         }}
       >
-        {['YKS Hazırlık'].map((kategori, index) => (
+        {categories.filter(kategori => kategori !== '').map((kategori) => (
           <button
             key={kategori}
             onClick={() => handleFilter(kategori)}
             style={{
-              gridColumn: isMobile && index === 0 ? 'span 2' : 'auto',
-              padding: isMobile ? '5px 90px' : '10px 20px',
+              padding: '10px 20px',
               cursor: 'pointer',
               borderRadius: '25px',
               border: 'none',
@@ -232,26 +228,7 @@ export default function Index() {
               color: filteredCategory === kategori ? '#fff' : '#6c63ff',
               boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
               transition: 'background-color 0.3s ease, color 0.3s ease',
-              width: isMobile ? '100%' : 'auto'
-            }}
-          >
-            {kategori}
-          </button>
-        ))}
-        {categories.filter(kategori => kategori !== 'YKS Hazırlık').map((kategori) => (
-          <button
-            key={kategori}
-            onClick={() => handleFilter(kategori)}
-            style={{
-              padding: isMobile ? '5px 10px' : '10px 20px',
-              cursor: 'pointer',
-              borderRadius: '25px',
-              border: 'none',
-              backgroundColor: filteredCategory === kategori ? '#6c63ff' : '#fff',
-              color: filteredCategory === kategori ? '#fff' : '#6c63ff',
-              boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
-              transition: 'background-color 0.3s ease, color 0.3s ease',
-              width: isMobile ? '100%' : 'auto'
+              width: 'auto'
             }}
           >
             {kategori}
@@ -259,7 +236,7 @@ export default function Index() {
         ))}
       </div>
       {/* Subcategories Filter Buttons */}
-      {filteredCategory !== 'YKS Hazırlık' && subcategories.length > 0 && (
+      {filteredCategory !== '' && subcategories.length > 0 && (
         <div
           style={{
             marginTop: isMobile ? '10px' : '20px',
@@ -279,7 +256,7 @@ export default function Index() {
               key={altkategori}
               onClick={() => handleSubcategoryFilter(altkategori)}
               style={{
-                padding: isMobile ? '5px 10px' : '10px 20px',
+                padding: '10px 20px',
                 cursor: 'pointer',
                 borderRadius: '25px',
                 border: 'none',
@@ -287,7 +264,7 @@ export default function Index() {
                 color: filteredSubcategory === altkategori ? '#fff' : '#28a745',
                 boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
                 transition: 'background-color 0.3s ease, color 0.3s ease',
-                width: isMobile ? '100%' : 'auto'
+                width: 'auto'
               }}
             >
               {altkategori}
@@ -316,7 +293,7 @@ export default function Index() {
               key={altaltkategori}
               onClick={() => handleSubsubcategoryFilter(altaltkategori)}
               style={{
-                padding: isMobile ? '5px 10px' : '10px 20px',
+                padding: '10px 20px',
                 cursor: 'pointer',
                 borderRadius: '25px',
                 border: 'none',
@@ -324,7 +301,7 @@ export default function Index() {
                 color: filteredSubsubcategory === altaltkategori ? '#fff' : '#ff6347',
                 boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
                 transition: 'background-color 0.3s ease, color 0.3s ease',
-                width: isMobile ? '100%' : 'auto'
+                width: 'auto'
               }}
             >
               {altaltkategori}
