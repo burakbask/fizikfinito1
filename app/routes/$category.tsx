@@ -220,7 +220,7 @@ export default function Index() {
             key={kategori}
             onClick={() => handleFilter(kategori)}
             style={{
-              padding: '10px 20px',
+              padding: '1px 20px',
               cursor: 'pointer',
               borderRadius: '25px',
               border: 'none',
