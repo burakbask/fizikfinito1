@@ -45,7 +45,9 @@ export const getItem = async (collectionName, itemId) => {
   }
 };
 
-export const getItemBySlug = async (collectionName, slug, p0: { fields: string; }) => {
+export const getItemBySlug = async (collectionName, slug, p0) => {
+  const { fields } = p0; // Bu satırda "fields" parametresini çıkarıyoruz
+
   try {
     const directusUrl = process.env.PUBLIC_DIRECTUS_API_URL;
     const directusToken = process.env.PUBLIC_DIRECTUS_API_TOKEN;
