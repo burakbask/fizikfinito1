@@ -182,7 +182,7 @@ export default function Root() {
           </main>
         </div>
         <footer className="bg-gray-900 text-white p-6 text-center mt-auto w-full">
-          <p>&copy; 2024 Fizikfinito - Tüm Hakları Saklıdır. Görüş ve tavsiyeleriniz için: fizikfinito@zeduva.com</p>
+          <p>BETA versiyon &copy;2024 Fizikfinito - Tüm Hakları Saklıdır. Görüş ve tavsiyeleriniz için: fizikfinito@zeduva.com</p>
         </footer>
         <ScrollRestoration />
         <Scripts />

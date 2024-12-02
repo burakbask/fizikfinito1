@@ -1,3 +1,4 @@
+//book.tsx
 import { useEffect } from 'react';
 import ProductComponentWrapper from './ProductComponentWrapper';
 
@@ -11,64 +12,26 @@ const ShopifyScriptComponent = ({ productId }: { productId: string }) => {
   useEffect(() => {
     const scriptURL = 'https://sdks.shopifycdn.com/buy-button/latest/buy-button-storefront.min.js';
 
-    // Load script if it's not already present
-    if (!document.querySelector(`script[src="${scriptURL}"]`)) {
-      loadScript().then(() => {
-        waitForShopifyBuy().then(() => {
-          ShopifyBuyInit();
-        }).catch(error => {
-          console.error('ShopifyBuy did not load properly:', error);
-        });
-      }).catch(error => {
-        console.error('Failed to load Shopify script:', error);
-      });
+    if (!window.ShopifyBuy || !window.ShopifyBuy.UI) {
+      loadScript().then(() => ShopifyBuyInit());
     } else {
-      // Script already loaded, ensure ShopifyBuy is ready
-      waitForShopifyBuy().then(() => {
-        ShopifyBuyInit();
-      }).catch(error => {
-        console.error('ShopifyBuy did not load properly:', error);
-      });
+      ShopifyBuyInit();
     }
 
-    // Function to load the Shopify script
     function loadScript() {
-      return new Promise<void>((resolve, reject) => {
+      return new Promise<void>((resolve) => {
+        if (document.querySelector(`script[src="${scriptURL}"]`)) {
+          resolve(); // Script zaten yüklü ise devam et
+          return;
+        }
         const script = document.createElement('script');
         script.async = true;
         script.src = scriptURL;
-        script.onload = () => {
-          resolve();
-        };
-        script.onerror = () => {
-          reject(new Error('Failed to load the Shopify script.'));
-        };
+        script.onload = () => resolve();
         document.head.appendChild(script);
       });
     }
 
-    // Function to wait for ShopifyBuy to be available
-    function waitForShopifyBuy() {
-      return new Promise<void>((resolve, reject) => {
-        const maxRetries = 20;
-        let retries = 0;
-
-        function checkShopifyBuy() {
-          if (window.ShopifyBuy && window.ShopifyBuy.buildClient) {
-            resolve();
-          } else if (retries < maxRetries) {
-            retries++;
-            setTimeout(checkShopifyBuy, 250); // Retry after 250ms
-          } else {
-            reject(new Error('ShopifyBuy is not available after multiple attempts.'));
-          }
-        }
-
-        checkShopifyBuy();
-      });
-    }
-
-    // Initialize Shopify Buy Button
     function ShopifyBuyInit() {
       const client = window.ShopifyBuy.buildClient({
         domain: 'fizikfinito.zeduva.com',
@@ -77,7 +40,7 @@ const ShopifyScriptComponent = ({ productId }: { productId: string }) => {
 
       const productElement = document.querySelector(`.shopify-product[data-product-id="${productId}"]`);
       if (productElement) {
-        // Clear any existing content from the element
+        // Eski bileşeni kaldır
         while (productElement.firstChild) {
           productElement.removeChild(productElement.firstChild);
         }
@@ -92,10 +55,10 @@ const ShopifyScriptComponent = ({ productId }: { productId: string }) => {
                 styles: {
                   product: {
                     '@media (min-width: 601px)': {
-                      'max-width': 'calc(33.33% - 20px)',
-                      'margin-left': '5px',
-                      'margin-right': '5px',
-                      'margin-bottom': '225px',
+                      'max-width': 'calc(25% - 15px)',
+                      'margin-left': '3.75px',
+                      'margin-right': '3.75px',
+                      'margin-bottom': '168.75px',
                     },
                   },
                   button: {
@@ -105,9 +68,9 @@ const ShopifyScriptComponent = ({ productId }: { productId: string }) => {
                     'border-radius': '13px',
                   },
                   quantityInput: {
-                    'font-size': '16px',
-                    'padding-top': '16px',
-                    'padding-bottom': '16px',
+                    'font-size': '12px',
+                    'padding-top': '12px',
+                    'padding-bottom': '12px',
                   },
                 },
                 text: {
@@ -117,8 +80,10 @@ const ShopifyScriptComponent = ({ productId }: { productId: string }) => {
                   description: productElement.hasAttribute('data-description'),
                 },
                 templates: {
-                  title: '',
-                  img: '<a class="shopify-buy__product__title" href="{{data.onlineStoreUrl}}" target="_blank">{{#data.currentImage.srcLarge}}<div class="{{data.classes.product.imgWrapper}}" data-element="product.imgWrapper"><img alt="{{data.currentImage.altText}}" data-element="product.img" class="{{data.classes.product.img}}" src="{{data.currentImage.srcLarge}}" /></div>{{/data.currentImage.srcLarge}}</a>',
+                  title:
+                    '',
+                  img:
+                    '<a class="shopify-buy__product__title" href="{{data.onlineStoreUrl}}" target="_blank">{{#data.currentImage.srcLarge}}<div class="{{data.classes.product.imgWrapper}}" data-element="product.imgWrapper"><img alt="{{data.currentImage.altText}}" data-element="product.img" class="{{data.classes.product.img}}" src="{{data.currentImage.srcLarge}}" /></div>{{/data.currentImage.srcLarge}}</a>',
                 },
               },
               modalProduct: {
@@ -131,9 +96,9 @@ const ShopifyScriptComponent = ({ productId }: { productId: string }) => {
                 styles: {
                   product: {
                     '@media (min-width: 601px)': {
-                      'max-width': '100%',
-                      'margin-left': '50px',
-                      'margin-bottom': '50px',
+                      'max-width': '75%',
+                      'margin-left': '37.5px',
+                      'margin-bottom': '37.5px',
                     },
                   },
                   button: {
@@ -143,9 +108,9 @@ const ShopifyScriptComponent = ({ productId }: { productId: string }) => {
                     'border-radius': '123px',
                   },
                   quantityInput: {
-                    'font-size': '12px',
-                    'padding-top': '12px',
-                    'padding-bottom': '12px',
+                    'font-size': '9px',
+                    'padding-top': '9px',
+                    'padding-bottom': '9px',
                   },
                 },
                 text: {
@@ -173,7 +138,7 @@ const ShopifyScriptComponent = ({ productId }: { productId: string }) => {
               toggle: {
                 styles: {
                   count: {
-                    'font-size': '16px',
+                    'font-size': '12px',
                   },
                 },
               },
@@ -185,7 +150,7 @@ const ShopifyScriptComponent = ({ productId }: { productId: string }) => {
   }, [productId]);
 
   return (
-    <div className={`shopify-product`} data-product-id={productId}>
+    <div className="shopify-product" data-product-id={productId}>
       <ProductComponentWrapper />
     </div>
   );
