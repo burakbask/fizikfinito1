@@ -47,7 +47,7 @@ const normalizeString = (str: any) => {
 
   return str
     .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[̀-ͯ]/g, '')
     .replace(/[ı]/g, 'i')
     .replace(/[ç]/g, 'c')
     .replace(/[ş]/g, 's')
@@ -71,6 +71,20 @@ export default function Index() {
   const navigate = useNavigate();
   const { cardsData, categoriesData, initialCategory: initialCategoryFromLoader, initialSubcategory, initialSubsubcategory, pathname } = useLoaderData<typeof loader>();
 
+  const categories = Array.from(new Set(cardsData.map((card) => card.kategori)));
+
+  const subcategories =
+    initialCategoryFromLoader !== ''
+      ? Array.from(
+          new Set([
+            'Neler Bulabilirsiniz?',
+            ...cardsData
+              .filter((card) => card.kategori === initialCategoryFromLoader)
+              .map((card) => card.altkategori)
+          ])
+        )
+      : [];
+
   useEffect(() => {
     if (pathname) {
       window.history.replaceState(null, '', pathname);
@@ -78,25 +92,11 @@ export default function Index() {
   }, [pathname]);
 
   const [filteredCategory, setFilteredCategory] = useState<string>(initialCategoryFromLoader);
-  const [filteredSubcategory, setFilteredSubcategory] = useState<string>(initialSubcategory);
+  const [filteredSubcategory, setFilteredSubcategory] = useState<string>(initialSubcategory || (subcategories.length > 0 ? subcategories[0] : ''));
   const [filteredSubsubcategory, setFilteredSubsubcategory] = useState<string>(initialSubsubcategory);
   const [filteredCards, setFilteredCards] = useState<CardData[]>([]);
 
   const isMobile = useMediaQuery({ query: '(max-width: 768px)' });
-
-  const categories = Array.from(new Set(cardsData.map((card) => card.kategori)));
-
-  const subcategories =
-    filteredCategory !== ''
-      ? Array.from(
-          new Set([
-            'Neler Bulabilirsiniz?',
-            ...cardsData
-              .filter((card) => card.kategori === filteredCategory)
-              .map((card) => card.altkategori)
-          ])
-        )
-      : [];
 
   const subsubcategories =
     filteredSubcategory !== ''
@@ -115,7 +115,7 @@ export default function Index() {
 
   const handleFilter = (kategori: string) => {
     setFilteredCategory(kategori);
-    setFilteredSubcategory('');
+    setFilteredSubcategory(subcategories.length > 0 ? subcategories[0] : '');
     setFilteredSubsubcategory('');
     const normalizedKategori = normalizeString(kategori);
     window.history.pushState(null, '', `/${normalizedKategori}`);
@@ -160,7 +160,7 @@ export default function Index() {
       if (savedSubcategory && savedCategory) {
         setFilteredSubcategory(savedSubcategory);
       } else {
-        setFilteredSubcategory(initialSubcategory);
+        setFilteredSubcategory(initialSubcategory || (subcategories.length > 0 ? subcategories[0] : ''));
       }
 
       if (savedSubsubcategory && savedSubcategory && savedCategory) {
@@ -199,6 +199,14 @@ export default function Index() {
 
     setFilteredCards(updatedFilteredCards);
   }, [filteredCategory, filteredSubcategory, filteredSubsubcategory, cardsData]);
+
+  useEffect(() => {
+    // Prevent horizontal scrolling when switching categories
+    document.body.style.overflowX = 'hidden';
+    return () => {
+      document.body.style.overflowX = 'auto';
+    };
+  }, [filteredCategory, filteredSubcategory, filteredSubsubcategory]);
 
   return (
     <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
@@ -240,16 +248,14 @@ export default function Index() {
       {filteredCategory !== '' && subcategories.length > 0 && (
         <div
           style={{
-            marginTop: isMobile ? '10px' : '10px',
-            display: isMobile ? 'grid' : 'flex',
-            gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'none',
-            gap: isMobile ? '10px' : '10px', // Adjusted gap to reduce extra space
+            marginTop: '10px',
+            display: 'flex',
             flexWrap: 'wrap',
             justifyContent: 'center',
-            background: 'linear-gradient(135deg, #f9f9f9, #ffffff)',
-            padding: isMobile ? '10px' : '10px',
+            background: 'linear-gradient(135deg, #ece9e6, #ffffff)',
+            padding: '5px',
             borderRadius: '25px',
-            boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.15)',
+            boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.2)',
           }}
         >
           {subcategories.map((altkategori) => (
@@ -257,7 +263,7 @@ export default function Index() {
               key={altkategori}
               onClick={() => handleSubcategoryFilter(altkategori)}
               style={{
-                padding: '10px 20px',
+                padding: '5px 10px',
                 cursor: 'pointer',
                 borderRadius: '25px',
                 border: 'none',
@@ -278,16 +284,14 @@ export default function Index() {
       {filteredSubcategory !== '' && subsubcategories.length > 0 && (
         <div
           style={{
-            marginTop: isMobile ? '10px' : '10px',
-            display: isMobile ? 'grid' : 'flex',
-            gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'none',
-            gap: isMobile ? '10px' : '10px', // Adjusted gap to reduce extra space
+            marginTop: '10px',
+            display: 'flex',
             flexWrap: 'wrap',
             justifyContent: 'center',
-            background: 'linear-gradient(135deg, #f9f9f9, #ffffff)',
-            padding: isMobile ? '10px' : '10px',
+            background: 'linear-gradient(135deg, #ece9e6, #ffffff)',
+            padding: '5px',
             borderRadius: '25px',
-            boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.15)',
+            boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.2)',
           }}
         >
           {subsubcategories.map((altaltkategori) => (
@@ -295,7 +299,7 @@ export default function Index() {
               key={altaltkategori}
               onClick={() => handleSubsubcategoryFilter(altaltkategori)}
               style={{
-                padding: '10px 20px',
+                padding: isMobile ? '5px 10px' : '10px 20px',
                 cursor: 'pointer',
                 borderRadius: '25px',
                 border: 'none',

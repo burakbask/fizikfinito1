@@ -48,12 +48,12 @@ const normalizeString = (str: any) => {
   return str
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[\u0131]/g, 'i')
-    .replace(/[\u00e7]/g, 'c')
-    .replace(/[\u015f]/g, 's')
-    .replace(/[\u00f6]/g, 'o')
-    .replace(/[\u00fc]/g, 'u')
-    .replace(/[\u011f]/g, 'g')
+    .replace(/[ı]/g, 'i')
+    .replace(/[ç]/g, 'c')
+    .replace(/[ş]/g, 's')
+    .replace(/[ö]/g, 'o')
+    .replace(/[ü]/g, 'u')
+    .replace(/[ğ]/g, 'g')
     .replace(/\s+/g, '-'); // Replace spaces with hyphens for SEO
 };
 
@@ -201,16 +201,16 @@ export default function Index() {
   }, [filteredCategory, filteredSubcategory, filteredSubsubcategory, cardsData]);
 
   return (
-    <div>
+    <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
       {/* Filter Buttons */}
       <div
         style={{
-          marginTop: '20px',
+          marginTop: '10px',
           display: 'flex',
           flexWrap: 'wrap',
           justifyContent: 'center',
           background: 'linear-gradient(135deg, #ece9e6, #ffffff)',
-          padding: '20px',
+          padding: '5px',
           borderRadius: '25px',
           boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.2)',
         }}
@@ -228,7 +228,8 @@ export default function Index() {
               color: filteredCategory === kategori ? '#fff' : '#6c63ff',
               boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
               transition: 'background-color 0.3s ease, color 0.3s ease',
-              width: 'auto'
+              width: 'auto',
+              margin: '5px' // Adjusted margin to reduce extra space
             }}
           >
             {kategori}
@@ -239,16 +240,14 @@ export default function Index() {
       {filteredCategory !== '' && subcategories.length > 0 && (
         <div
           style={{
-            marginTop: isMobile ? '10px' : '20px',
-            display: isMobile ? 'grid' : 'flex',
-            gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'none',
-            gap: isMobile ? '10px' : '20px',
+            marginTop: '10px',
+            display: 'flex',
             flexWrap: 'wrap',
             justifyContent: 'center',
-            background: 'linear-gradient(135deg, #f9f9f9, #ffffff)',
-            padding: isMobile ? '10px' : '20px',
+            background: 'linear-gradient(135deg, #ece9e6, #ffffff)',
+            padding: '5px',
             borderRadius: '25px',
-            boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.15)',
+            boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.2)',
           }}
         >
           {subcategories.map((altkategori) => (
@@ -256,7 +255,7 @@ export default function Index() {
               key={altkategori}
               onClick={() => handleSubcategoryFilter(altkategori)}
               style={{
-                padding: '10px 20px',
+                padding: '5px 10px',
                 cursor: 'pointer',
                 borderRadius: '25px',
                 border: 'none',
@@ -264,7 +263,8 @@ export default function Index() {
                 color: filteredSubcategory === altkategori ? '#fff' : '#28a745',
                 boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
                 transition: 'background-color 0.3s ease, color 0.3s ease',
-                width: 'auto'
+                width: 'auto',
+                margin: '5px' // Adjusted margin to reduce extra space
               }}
             >
               {altkategori}
@@ -276,16 +276,14 @@ export default function Index() {
       {filteredSubcategory !== '' && subsubcategories.length > 0 && (
         <div
           style={{
-            marginTop: isMobile ? '10px' : '20px',
-            display: isMobile ? 'grid' : 'flex',
-            gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'none',
-            gap: isMobile ? '10px' : '20px',
+            marginTop: '10px',
+            display: 'flex',
             flexWrap: 'wrap',
             justifyContent: 'center',
-            background: 'linear-gradient(135deg, #f9f9f9, #ffffff)',
-            padding: isMobile ? '10px' : '20px',
+            background: 'linear-gradient(135deg, #ece9e6, #ffffff)',
+            padding: '5px',
             borderRadius: '25px',
-            boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.15)',
+            boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.2)',
           }}
         >
           {subsubcategories.map((altaltkategori) => (
@@ -293,7 +291,7 @@ export default function Index() {
               key={altaltkategori}
               onClick={() => handleSubsubcategoryFilter(altaltkategori)}
               style={{
-                padding: '10px 20px',
+                padding: isMobile ? '5px 10px' : '10px 20px',
                 cursor: 'pointer',
                 borderRadius: '25px',
                 border: 'none',
@@ -301,7 +299,8 @@ export default function Index() {
                 color: filteredSubsubcategory === altaltkategori ? '#fff' : '#ff6347',
                 boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
                 transition: 'background-color 0.3s ease, color 0.3s ease',
-                width: 'auto'
+                width: 'auto',
+                margin: '5px' // Adjusted margin to reduce extra space
               }}
             >
               {altaltkategori}
@@ -319,7 +318,7 @@ export default function Index() {
             alignItems: 'center',
             width: '100%',
             backgroundColor: '#ffffff',
-            padding: '10px',
+            padding: '5px',
             borderRadius: '15px',
             boxShadow: '0px 10px 20px rgba(0, 0, 0, 0.1)',
           }}
