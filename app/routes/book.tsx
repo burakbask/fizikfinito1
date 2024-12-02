@@ -1,4 +1,3 @@
-//book.tsx
 import { useEffect } from 'react';
 import ProductComponentWrapper from './ProductComponentWrapper';
 
@@ -12,26 +11,64 @@ const ShopifyScriptComponent = ({ productId }: { productId: string }) => {
   useEffect(() => {
     const scriptURL = 'https://sdks.shopifycdn.com/buy-button/latest/buy-button-storefront.min.js';
 
-    if (!window.ShopifyBuy || !window.ShopifyBuy.UI) {
-      loadScript().then(() => ShopifyBuyInit());
+    // Load script if it's not already present
+    if (!document.querySelector(`script[src="${scriptURL}"]`)) {
+      loadScript().then(() => {
+        waitForShopifyBuy().then(() => {
+          ShopifyBuyInit();
+        }).catch(error => {
+          console.error('ShopifyBuy did not load properly:', error);
+        });
+      }).catch(error => {
+        console.error('Failed to load Shopify script:', error);
+      });
     } else {
-      ShopifyBuyInit();
+      // Script already loaded, ensure ShopifyBuy is ready
+      waitForShopifyBuy().then(() => {
+        ShopifyBuyInit();
+      }).catch(error => {
+        console.error('ShopifyBuy did not load properly:', error);
+      });
     }
 
+    // Function to load the Shopify script
     function loadScript() {
-      return new Promise<void>((resolve) => {
-        if (document.querySelector(`script[src="${scriptURL}"]`)) {
-          resolve(); // Script zaten yüklü ise devam et
-          return;
-        }
+      return new Promise<void>((resolve, reject) => {
         const script = document.createElement('script');
         script.async = true;
         script.src = scriptURL;
-        script.onload = () => resolve();
+        script.onload = () => {
+          resolve();
+        };
+        script.onerror = () => {
+          reject(new Error('Failed to load the Shopify script.'));
+        };
         document.head.appendChild(script);
       });
     }
 
+    // Function to wait for ShopifyBuy to be available
+    function waitForShopifyBuy() {
+      return new Promise<void>((resolve, reject) => {
+        const maxRetries = 20;
+        let retries = 0;
+
+        function checkShopifyBuy() {
+          if (window.ShopifyBuy && window.ShopifyBuy.buildClient) {
+            resolve();
+          } else if (retries < maxRetries) {
+            retries++;
+            setTimeout(checkShopifyBuy, 250); // Retry after 250ms
+          } else {
+            reject(new Error('ShopifyBuy is not available after multiple attempts.'));
+          }
+        }
+
+        checkShopifyBuy();
+      });
+    }
+
+    // Initialize Shopify Buy Button
     function ShopifyBuyInit() {
       const client = window.ShopifyBuy.buildClient({
         domain: 'fizikfinito.zeduva.com',
@@ -40,7 +77,7 @@ const ShopifyScriptComponent = ({ productId }: { productId: string }) => {
 
       const productElement = document.querySelector(`.shopify-product[data-product-id="${productId}"]`);
       if (productElement) {
-        // Eski bileşeni kaldır
+        // Clear any existing content from the element
         while (productElement.firstChild) {
           productElement.removeChild(productElement.firstChild);
         }
@@ -80,10 +117,8 @@ const ShopifyScriptComponent = ({ productId }: { productId: string }) => {
                   description: productElement.hasAttribute('data-description'),
                 },
                 templates: {
-                  title:
-                    '',
-                  img:
-                    '<a class="shopify-buy__product__title" href="{{data.onlineStoreUrl}}" target="_blank">{{#data.currentImage.srcLarge}}<div class="{{data.classes.product.imgWrapper}}" data-element="product.imgWrapper"><img alt="{{data.currentImage.altText}}" data-element="product.img" class="{{data.classes.product.img}}" src="{{data.currentImage.srcLarge}}" /></div>{{/data.currentImage.srcLarge}}</a>',
+                  title: '',
+                  img: '<a class="shopify-buy__product__title" href="{{data.onlineStoreUrl}}" target="_blank">{{#data.currentImage.srcLarge}}<div class="{{data.classes.product.imgWrapper}}" data-element="product.imgWrapper"><img alt="{{data.currentImage.altText}}" data-element="product.img" class="{{data.classes.product.img}}" src="{{data.currentImage.srcLarge}}" /></div>{{/data.currentImage.srcLarge}}</a>',
                 },
               },
               modalProduct: {
