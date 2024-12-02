@@ -31,12 +31,21 @@ export const loader = async ({ params, request }: { params: { category?: string;
   const url = new URL(request.url);
   const { pathname } = url;
 
+  const firstCategory = categoriesData.length > 0 ? categoriesData[0] : '';
+
   // Redirect to the homepage if the URL does not match any category or subcategory
   if (category && !categoriesData.some((cat) => normalizeString(cat) === category)) {
     return redirect('/');
   }
 
-  return json({ cardsData, categoriesData, initialCategory: category || '', initialSubcategory: subcategory || '', initialSubsubcategory: subsubcategory || '', pathname });
+  return json({
+    cardsData,
+    categoriesData,
+    initialCategory: category || normalizeString(firstCategory),
+    initialSubcategory: subcategory || 'Neler Bulabilirsiniz?',
+    initialSubsubcategory: subsubcategory || '',
+    pathname
+  });
 };
 
 // Utility function to convert Turkish characters to English equivalents
@@ -47,7 +56,7 @@ const normalizeString = (str: any) => {
 
   return str
     .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[̀-ͯ]/g, '')
     .replace(/[ı]/g, 'i')
     .replace(/[ç]/g, 'c')
     .replace(/[ş]/g, 's')
@@ -115,14 +124,16 @@ export default function Index() {
 
   const handleFilter = (kategori: string) => {
     setFilteredCategory(kategori);
-    setFilteredSubcategory('');
+    setFilteredSubcategory('Neler Bulabilirsiniz?'); // Varsayılan altkategori
     setFilteredSubsubcategory('');
     const normalizedKategori = normalizeString(kategori);
     window.history.pushState(null, '', `/${normalizedKategori}`);
+
     if (typeof window !== 'undefined') {
       localStorage.setItem('filteredCategory', kategori);
     }
-    sessionStorage.removeItem('filteredSubcategory');
+
+    sessionStorage.setItem('filteredSubcategory', 'Neler Bulabilirsiniz?'); // Varsayılan altkategori kaydediliyor
     sessionStorage.removeItem('filteredSubsubcategory');
   };
 
@@ -146,30 +157,15 @@ export default function Index() {
   };
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const savedCategory = localStorage.getItem('filteredCategory');
-      const savedSubcategory = sessionStorage.getItem('filteredSubcategory');
-      const savedSubsubcategory = sessionStorage.getItem('filteredSubsubcategory');
-  
-      if (savedCategory) {
-        setFilteredCategory(savedCategory);
-      } else {
-        setFilteredCategory(initialCategoryFromLoader);
-      }
-
-      if (savedSubcategory && savedCategory) {
-        setFilteredSubcategory(savedSubcategory);
-      } else {
-        setFilteredSubcategory(initialSubcategory);
-      }
-
-      if (savedSubsubcategory && savedSubcategory && savedCategory) {
-        setFilteredSubsubcategory(savedSubsubcategory);
-      } else {
-        setFilteredSubsubcategory(initialSubsubcategory);
-      }
-    }
-}, []);
+  if (filteredCategory === '' && categories.length > 0) {
+    const firstCategory = categories[0];
+    setFilteredCategory(firstCategory);
+    setFilteredSubcategory('Neler Bulabilirsiniz?');
+    setFilteredSubsubcategory('');
+    const normalizedKategori = normalizeString(firstCategory);
+    window.history.replaceState(null, '', `/${normalizedKategori}`);
+  }
+}, [filteredCategory, categories]);
 
 
   useEffect(() => {
@@ -200,6 +196,13 @@ export default function Index() {
     setFilteredCards(updatedFilteredCards);
   }, [filteredCategory, filteredSubcategory, filteredSubsubcategory, cardsData]);
 
+  useEffect(() => {
+    document.body.style.overflowX = 'hidden';
+    return () => {
+      document.body.style.overflowX = 'auto';
+    };
+  }, [filteredCategory, filteredSubcategory, filteredSubsubcategory]);
+
   return (
     <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
       {/* Filter Buttons */}
@@ -229,7 +232,7 @@ export default function Index() {
               boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
               transition: 'background-color 0.3s ease, color 0.3s ease',
               width: 'auto',
-              margin: '5px' // Adjusted margin to reduce extra space
+              margin: '5px'
             }}
           >
             {kategori}
@@ -264,7 +267,7 @@ export default function Index() {
                 boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
                 transition: 'background-color 0.3s ease, color 0.3s ease',
                 width: 'auto',
-                margin: '5px' // Adjusted margin to reduce extra space
+                margin: '5px'
               }}
             >
               {altkategori}
@@ -300,7 +303,7 @@ export default function Index() {
                 boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
                 transition: 'background-color 0.3s ease, color 0.3s ease',
                 width: 'auto',
-                margin: '5px' // Adjusted margin to reduce extra space
+                margin: '5px'
               }}
             >
               {altaltkategori}
@@ -308,7 +311,7 @@ export default function Index() {
           ))}
         </div>
       )}
-      {/* Static Video for "neler var" Subcategory */}
+      {/* Static Video for "Neler Bulabilirsiniz?" Subcategory */}
       {filteredSubcategory === 'Neler Bulabilirsiniz?' && categoryVideos[filteredCategory] && (
         <div
           style={{
@@ -386,7 +389,7 @@ export default function Index() {
                     <iframe
                       width={isMobile ? '100%' : '250px'}
                       height={isMobile ? '200px' : '200px'}
-                      src={`https://www.youtube.com/embed/${card.videoUrl.split('v=')[1]?.split('&')[0] || ''}`}
+                      src={`https://www.youtube.com/embed?listType=playlist&list=${card.videoUrl.split('list=')[1] || ''}`}
                       title="YouTube video player"
                       frameBorder="0"
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

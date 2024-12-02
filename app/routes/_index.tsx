@@ -56,13 +56,13 @@ const normalizeString = (str: any) => {
 
   return str
     .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[\u0131]/g, 'i')
-    .replace(/[\u00e7]/g, 'c')
-    .replace(/[\u015f]/g, 's')
-    .replace(/[\u00f6]/g, 'o')
-    .replace(/[\u00fc]/g, 'u')
-    .replace(/[\u011f]/g, 'g')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/[ı]/g, 'i')
+    .replace(/[ç]/g, 'c')
+    .replace(/[ş]/g, 's')
+    .replace(/[ö]/g, 'o')
+    .replace(/[ü]/g, 'u')
+    .replace(/[ğ]/g, 'g')
     .replace(/\s+/g, '-'); // Replace spaces with hyphens for SEO
 };
 
@@ -389,7 +389,7 @@ export default function Index() {
                     <iframe
                       width={isMobile ? '100%' : '250px'}
                       height={isMobile ? '200px' : '200px'}
-                      src={`https://www.youtube.com/embed/${card.videoUrl.split('v=')[1]?.split('&')[0] || ''}`}
+                      src={`https://www.youtube.com/embed?listType=playlist&list=${card.videoUrl.split('list=')[1] || ''}`}
                       title="YouTube video player"
                       frameBorder="0"
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

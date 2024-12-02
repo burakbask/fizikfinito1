@@ -1,3 +1,5 @@
+//ProductComponentWrapper.tsx
+
 import React from 'react';
 
 const ProductComponentWrapper = () => {
