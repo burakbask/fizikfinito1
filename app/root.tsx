@@ -47,7 +47,7 @@ export default function Root() {
       <body className="flex flex-col min-h-screen bg-gray-100">
         <header>
           <nav className="bg-white p-4 shadow-md">
-            <div className="container mx-auto flex items-center justify-between space-x-4">
+            <div className="container mx-auto flex items-center justify-between">
               <Link to="/" className="flex items-center">
                 <img
                   src="https://yt3.googleusercontent.com/g3EIUoVlq6BcGY7I7uC6oO0bYV92EK2_eXg1r5UTXhPgzIc8hK0ERX1NjOxnfKXOANUOpXbu=s160-c-k-c0x00ffffff-no-rj"
@@ -154,7 +154,7 @@ export default function Root() {
             overlay.classList.add('hidden');
           }}></div>
         </header>
-        <div className="flex flex-1 relative">
+        <div className="flex flex-1">
           <aside className="md:fixed left-0 top-1/2 transform -translate-y-1/2 bg-transparent p-6 hidden md:block">
             <div className="flex flex-col items-center">
               <ul className="space-y-4">
@@ -176,7 +176,8 @@ export default function Root() {
               </ul>
             </div>
           </aside>
-          <main className="p-8 flex-1 w-full max-w-7xl mx-auto">
+          <main className="p-2 md:p-8 flex-1 w-full max-w-7xl mx-auto">
+
             <Outlet />
           </main>
         </div>

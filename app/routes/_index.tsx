@@ -47,7 +47,7 @@ const normalizeString = (str: any) => {
 
   return str
     .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
+    .replace(/[\u0300-\u036f]/g, '')
     .replace(/[ı]/g, 'i')
     .replace(/[ç]/g, 'c')
     .replace(/[ş]/g, 's')
@@ -201,7 +201,7 @@ export default function Index() {
   }, [filteredCategory, filteredSubcategory, filteredSubsubcategory, cardsData]);
 
   return (
-    <div>
+    <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
       {/* Filter Buttons */}
       <div
         style={{
@@ -210,7 +210,7 @@ export default function Index() {
           flexWrap: 'wrap',
           justifyContent: 'center',
           background: 'linear-gradient(135deg, #ece9e6, #ffffff)',
-          padding: '10px',
+          padding: '5px',
           borderRadius: '25px',
           boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.2)',
         }}
@@ -322,7 +322,7 @@ export default function Index() {
             alignItems: 'center',
             width: '100%',
             backgroundColor: '#ffffff',
-            padding: '10px',
+            padding: '5px',
             borderRadius: '15px',
             boxShadow: '0px 10px 20px rgba(0, 0, 0, 0.1)',
           }}

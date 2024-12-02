@@ -18,7 +18,7 @@ const Kitaplarimiz = () => {
     { id: "9845540684081", url: "https://fizikfinito.zeduva.com/products/biosem-paraf-z-takimi-tyt-biyoloji-video-ders-anlatim-kitabi-prf-yayinlari", title: "Biosem - TYT Biyoloji VİDEO DERS Kitabı - Paraf Z Takımı" },
     { id: "9849083003185", url: "https://fizikfinito.zeduva.com/products/10-gunde-matematik-temel-atma-garanti-biyiklimatematik-paraf-z-takimi", title: "BıyıklıMatematik - TYT Temel Atma Garantili Matematik SORU BANKASI/VİDEO DERS Kitabı - Paraf Z Takımı" },
     { id: "9840130916657", url: "https://fizikfinito.zeduva.com/products/paraf-z-takim-ayt-cografya-vi%CC%87deo-soru-bankasi", title: "Coğrafyanın Kodları - AYT Coğrafya Soru Bankası - Paraf Z Takımı" },
-    { id: "9865880830257", url: "https://fizikfinito.zeduva.com/products/cografyanin-kodlari-tyt-ayt-soru-bankasi-seti%CC%87-paraf-z-takimi", title: "Coğrafyanın Kodları - TYT AYT SORU BANKASI SETİ - Paraf Z takımı" },
+    { id: "9865880830257", url: "https://fizikfinito.zeduva.com/products/cografyanin-kodlari-tyt-ayt-soru-bankasi-seti%CC%87-paraf-z-takimi", title: "Coğrafyanın Kodları - TYT AYT Soru Bankası SETİ - Paraf Z takımı" },
     { id: "9839677997361", url: "https://fizikfinito.zeduva.com/products/cografyanin-kodlari-tyt-garanti%CC%87-konular-soru-bankasi-z-takimi", title: "Coğrafyanın Kodları - TYT Coğrafya Garanti Konular SORU BANKASI/VİDEO DERS Kitabı - Paraf Z Takımı" },
     { id: "9845521613105", url: "https://fizikfinito.zeduva.com/products/cografyanin-kodlari-paraf-z-takimi-tyt-cografya-soru-bankasi-paraf-yayinlari-9786257423915", title: "Coğrafyanın Kodları - TYT Coğrafya Soru Bankası - Paraf Z Takımı" },
     { id: "9840102703409", url: "https://fizikfinito.zeduva.com/products/fizikfinito-tyt-fi%CC%87zi%CC%87k-soru-bankasi-24-saatte-z-takimi", title: "Fizikfinito - TYT Fizik Soru Bankası - Paraf Z Takımı" },
@@ -87,14 +87,14 @@ const Kitaplarimiz = () => {
                     product: {
                       '@media (min-width: 601px)': {
                         'max-width': 'calc(33.33% - 20px)',
-                        'margin-left': '5px',
-                        'margin-right': '5px',
+                        'margin-left': 'auto',
+                        'margin-right': 'auto',
                         'margin-bottom': '30px',
                       },
                       '@media (max-width: 600px)': {
                         'max-width': '100%',
-                        'margin-left': '0',
-                        'margin-right': '0',
+                        'margin-left': 'auto',
+                        'margin-right': 'auto',
                         'margin-bottom': '20px',
                       },
                     },
@@ -115,7 +115,7 @@ const Kitaplarimiz = () => {
                     description: productElement.hasAttribute('data-description'),
                   },
                   templates: {
-                    title: `<div style="margin-bottom: 10px; font-weight: bold; font-size: 20px; color: #2c3e50;">${product.title}</div>`,
+                    title: `<div style="margin-bottom: 10px; font-weight: bold; font-size: 20px; color: #2c3e50; text-align: center;">${product.title}</div>`,
                     img: `<a class="shopify-buy__product__title" href="${product.url}" target="_blank" rel="noopener">{{#data.currentImage.srcLarge}}<div class="{{data.classes.product.imgWrapper}}" data-element="product.imgWrapper"><img alt="{{data.currentImage.altText}}" data-element="product.img" class="{{data.classes.product.img}}" src="{{data.currentImage.srcLarge}}" /></div>{{/data.currentImage.srcLarge}}</a>`
                   },
                 },
@@ -186,11 +186,11 @@ const Kitaplarimiz = () => {
   return (
     <div className="kitaplarimiz">
       <h1 style={{ fontSize: '32px', color: '#2c3e50', textAlign: 'center', marginBottom: '40px' }}>Tüm Kitaplarımız</h1>
-      <div className="product-list" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', gap: '20px' }}>
+      <div className="product-list" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: '20px' }}>
         {products.map((product) => (
           <div key={product.id} className="shopify-product" data-product-id={product.id} style={{ flex: '1 1 100%', boxSizing: 'border-box', textAlign: 'center', marginBottom: '30px', padding: '20px', backgroundColor: '#fff', borderRadius: '10px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', '@media (min-width: 601px)': { flex: '1 1 calc(33.33% - 20px)' } }}>
             <a href={product.url} target="_blank" rel="noopener">
-              <div style={{ marginBottom: '10px', fontWeight: 'bold', fontSize: '20px', color: '#2c3e50' }}>{product.title}</div>
+              <div style={{ marginBottom: '10px', fontWeight: 'bold', fontSize: '20px', color: '#2c3e50', textAlign: 'center' }}>{product.title}</div>
             </a>
           </div>
         ))}
