@@ -138,7 +138,7 @@ export default function Index() {
 
   const handleFilter = (kategori: string) => {
     setFilteredCategory(kategori);
-    setFilteredSubcategory('Neler Bulabilirsiniz?'); // Varsayılan altkategori
+    setFilteredSubcategory('Neler Bulabilirsiniz?'); // Varsayılan aaaltkategori
     setFilteredSubsubcategory('');
     const normalizedKategori = normalizeString(kategori);
     window.history.pushState(null, '', `/${normalizedKategori}`);
