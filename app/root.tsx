@@ -23,6 +23,11 @@ export const links: LinksFunction = () => [
     rel: "stylesheet",
     href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
   },
+  {
+    rel: "icon",
+    type: "image/png",
+    href: "https://cdn.zeduva.com/2024/12/fizikfinitologo.png",
+  },
 ];
 
 export const loader = async ({ request }: LoaderArgs) => {
@@ -81,7 +86,7 @@ export default function Root() {
                   </Link>
                 </li>
                 <li>
-                  <Link to="/calendar" className="text-gray-700 hover:text-blue-600 transition duration-300 ease-in-out" onClick={() => {
+                  <Link to="/takvim" className="text-gray-700 hover:text-blue-600 transition duration-300 ease-in-out" onClick={() => {
                     document.getElementById('mobile-menu').classList.add('-translate-x-full');
                     document.getElementById('menu-overlay').classList.add('hidden');
                   }}>
@@ -90,6 +95,14 @@ export default function Root() {
                 </li>
                 <li>
                   <Link to="/kitaplarimiz" className="text-gray-700 hover:text-blue-600 transition duration-300 ease-in-out" onClick={() => {
+                    document.getElementById('mobile-menu').classList.add('-translate-x-full');
+                    document.getElementById('menu-overlay').classList.add('hidden');
+                  }}>
+                    Tüm Kitaplarımız
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/yks-sayaci" className="text-gray-700 hover:text-blue-600 transition duration-300 ease-in-out" onClick={() => {
                     document.getElementById('mobile-menu').classList.add('-translate-x-full');
                     document.getElementById('menu-overlay').classList.add('hidden');
                   }}>
@@ -116,13 +129,18 @@ export default function Root() {
                   </Link>
                 </li>
                 <li>
-                  <Link to="/calendar" className="text-gray-700 hover:text-blue-600 transition duration-300 ease-in-out">
+                  <Link to="/takvim" className="text-gray-700 hover:text-blue-600 transition duration-300 ease-in-out">
                     Takvim
                   </Link>
                 </li>
                 <li>
                   <Link to="/kitaplarimiz" className="text-gray-700 hover:text-blue-600 transition duration-300 ease-in-out">
                     Tüm Kitaplarımız
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/yks-sayaci" className="text-gray-700 hover:text-blue-600 transition duration-300 ease-in-out">
+                    YKS Sayacı
                   </Link>
                 </li>
               </ul>

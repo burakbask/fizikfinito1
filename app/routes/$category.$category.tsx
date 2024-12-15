@@ -58,7 +58,7 @@ const normalizeString = (str: any) => {
 
   return str
     .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
+    .replace(/[\u0300-\u036f]/g, '')
     .replace(/[ı]/g, 'i')
     .replace(/[ç]/g, 'c')
     .replace(/[ş]/g, 's')
@@ -87,7 +87,7 @@ const categoryProducts: { [key: string]: string } = {
   '9. Sınıf': '9845539701041',
   '10. Sınıf': '9845539701041',
   '11. Sınıf': '9840132587825',
-  '12. Sınıf': '9840132587825'
+  '12. SınĿ': '9840132587825'
 };
 
 export default function Index() {
@@ -138,7 +138,7 @@ export default function Index() {
 
   const handleFilter = (kategori: string) => {
     setFilteredCategory(kategori);
-    setFilteredSubcategory('Neler Bulabilirsiniz?'); // Varsayılan altkategori
+    setFilteredSubcategory('Neler Bulabilirsiniz?'); // Varsayılan aaaltkategori
     setFilteredSubsubcategory('');
     const normalizedKategori = normalizeString(kategori);
     window.history.pushState(null, '', `/${normalizedKategori}`);
@@ -221,12 +221,12 @@ export default function Index() {
       {/* Filter Buttons */}
       <div
         style={{
-          marginTop: '20px',
+          marginTop: '10px',
           display: 'flex',
           flexWrap: 'wrap',
           justifyContent: 'center',
           background: 'linear-gradient(135deg, #f5f7fa, #c3cfe2)',
-          padding: '10px',
+          padding: '5px',
           borderRadius: '30px',
           boxShadow: '0px 15px 40px rgba(0, 0, 0, 0.1)',
           width: 'fit-content',
@@ -238,7 +238,7 @@ export default function Index() {
             key={kategori}
             onClick={() => handleFilter(kategori)}
             style={{
-              padding: '12px 25px',
+              padding: '10px 15px',
               cursor: 'pointer',
               borderRadius: '30px',
               border: 'none',
@@ -258,12 +258,12 @@ export default function Index() {
       {filteredCategory !== '' && subcategories.length > 0 && (
         <div
           style={{
-            marginTop: '20px',
+            marginTop: '10px',
             display: 'flex',
             flexWrap: 'wrap',
             justifyContent: 'center',
             background: 'linear-gradient(135deg, #f5f7fa, #c3cfe2)',
-            padding: '10px',
+            padding: '5px',
             borderRadius: '30px',
             boxShadow: '0px 15px 40px rgba(0, 0, 0, 0.1)',
             width: 'fit-content',
@@ -275,7 +275,7 @@ export default function Index() {
               key={altkategori}
               onClick={() => handleSubcategoryFilter(altkategori)}
               style={{
-                padding: '12px 25px',
+                padding: isMobile ? '5px 10px' : '10px 20px',
                 cursor: 'pointer',
                 borderRadius: '30px',
                 border: 'none',
@@ -283,7 +283,7 @@ export default function Index() {
                 color: filteredSubcategory === altkategori ? '#fff' : '#32cd32',
                 boxShadow: '0px 6px 15px rgba(0, 0, 0, 0.1)',
                 transition: 'background-color 0.3s ease, color 0.3s ease',
-                margin: '10px',
+                margin: '5px',
                 fontWeight: 'bold'
               }}
             >
@@ -296,12 +296,12 @@ export default function Index() {
       {filteredSubcategory !== '' && subsubcategories.length > 0 && (
         <div
           style={{
-            marginTop: '20px',
+            marginTop: '10px',
             display: 'flex',
             flexWrap: 'wrap',
             justifyContent: 'center',
             background: 'linear-gradient(135deg, #f5f7fa, #c3cfe2)',
-            padding: '10px',
+            padding: '5px',
             borderRadius: '30px',
             boxShadow: '0px 15px 40px rgba(0, 0, 0, 0.1)',
             width: 'fit-content',
@@ -313,7 +313,7 @@ export default function Index() {
               key={altaltkategori}
               onClick={() => handleSubsubcategoryFilter(altaltkategori)}
               style={{
-                padding: isMobile ? '8px 15px' : '12px 25px',
+                padding: isMobile ? '5px 10px' : '10px 20px',
                 cursor: 'pointer',
                 borderRadius: '30px',
                 border: 'none',
@@ -321,7 +321,7 @@ export default function Index() {
                 color: filteredSubsubcategory === altaltkategori ? '#fff' : '#ff4500',
                 boxShadow: '0px 6px 15px rgba(0, 0, 0, 0.1)',
                 transition: 'background-color 0.3s ease, color 0.3s ease',
-                margin: '10px',
+                margin: '5px',
                 fontWeight: 'bold'
               }}
             >
@@ -336,6 +336,7 @@ export default function Index() {
           style={{
             marginTop: isMobile ? '10px' : '30px',
             display: 'flex',
+            flexDirection: isMobile ? 'column' : 'row',
             justifyContent: 'center',
             alignItems: 'center',
             width: '100%',
@@ -346,8 +347,8 @@ export default function Index() {
           }}
         >
           <iframe
-            width={isMobile ? '100%' : '700px'}
-            height={isMobile ? '200px' : '400px'}
+            width={isMobile ? '100%' : '950px'}
+            height={isMobile ? '200px' : '500px'}
             src={categoryVideos[filteredCategory]}
             title="YouTube video player"
             frameBorder="0"
@@ -359,13 +360,13 @@ export default function Index() {
               objectFit: 'cover',
             }}
           ></iframe>
-          {categoryProducts[filteredCategory] && (
+          {isMobile ? (
+            <div style={{ marginTop: '20px' }}>
+              <ShopifyScriptComponentMobile productId={categoryProducts[filteredCategory]} />
+            </div>
+          ) : (
             <div style={{ marginLeft: '20px' }}>
-              {isMobile ? (
-                <ShopifyScriptComponentMobile productId={categoryProducts[filteredCategory]} />
-              ) : (
-                <ShopifyScriptComponent productId={categoryProducts[filteredCategory]} />
-              )}
+              <ShopifyScriptComponent productId={categoryProducts[filteredCategory]} />
             </div>
           )}
         </div>
@@ -416,7 +417,7 @@ export default function Index() {
                 >
                   {card.videoUrl ? (
                     <iframe
-                      width={isMobile ? '100%' : '300px'}
+                      width={isMobile ? '100%' : '400px'}
                       height={isMobile ? '200px' : '200px'}
                       src={`https://www.youtube.com/embed?listType=playlist&list=${card.videoUrl.split('list=')[1] || ''}`}
                       title="YouTube video player"
@@ -443,7 +444,7 @@ export default function Index() {
                   )}
                   <div
                     style={{
-                      padding: '20px',
+                      padding: '6px',
                       display: 'flex',
                       flexDirection: 'column',
                       justifyContent: 'center',
@@ -453,11 +454,11 @@ export default function Index() {
                       width: '100%',
                     }}
                   >
-                    <h3 style={{ color: '#4b0082', marginBottom: '5px', whiteSpace: 'normal', overflow: 'visible', textOverflow: 'unset', fontWeight: 'bold' }}>{card.kursBasligi}</h3>
-                    <p style={{ color: '#555', marginBottom: '5px' }}><strong>Kimler İçin:</strong> {card.kimlerIcin}</p>
-                    <p style={{ color: '#555', marginBottom: '5px' }}><strong>Süresi:</strong> {card.suresi}</p>
-                    <p style={{ color: '#555', marginBottom: '5px' }}><strong>Seviye:</strong> {card.seviye}</p>
-                    <p style={{ color: '#555', marginBottom: '5px' }}><strong>Güncel mi?:</strong> {card.guncelMi}</p>
+                    <h3 style={{ color: '#4b0082', marginBottom: '4px', whiteSpace: 'normal', overflow: 'visible', textOverflow: 'unset', fontWeight: 'bold' }}>{card.kursBasligi}</h3>
+                    <p style={{ color: '#555', marginBottom: '4px' }}><strong>Kimler İçin:</strong> {card.kimlerIcin}</p>
+                    <p style={{ color: '#555', marginBottom: '4px' }}><strong>Süresi:</strong> {card.suresi}</p>
+                    <p style={{ color: '#555', marginBottom: '4px' }}><strong>Seviye:</strong> {card.seviye}</p>
+                    <p style={{ color: '#555', marginBottom: '4px' }}><strong>Güncel mi?:</strong> {card.guncelMi}</p>
                     <hr style={{
                       border: 'none',
                       height: '3px',
